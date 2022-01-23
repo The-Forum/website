@@ -12,7 +12,7 @@ import { theme } from '../styles/theme'
 import { jsx, css } from '@emotion/react'
 
 
-const Home: NextPage = () => {
+const Home: NextPage = () => { //things to look: hooks, context, thinking react (thinking in components)
   const ScreenSwitch = () => {
     const { isAuthenticated } = useMoralis()
     const [isSignedUp, setIsSignedUp] = useState(false)
