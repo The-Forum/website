@@ -1,17 +1,25 @@
-/*.container {
-  padding: 0 2rem;
+
+
+.logo{
+    height: 50px;
+}
+.walletButton{
+  width:200px;
+}
+
+.container {
+  flex:1
 }
 
 .main {
   min-height: 100vh;
-  padding: 4rem 0;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-
+/*
 .footer {
   display: flex;
   flex: 1;
