@@ -4,22 +4,25 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useState } from 'react'
 import { MoralisProvider, useMoralis } from 'react-moralis'
-import { Homepage } from '../screens/Homepage'
+import { Chat, DaoTable, Homepage, SearchBar } from '../screens/Homepage'
 import { Login } from '../screens/Login'
 import { SignUp } from '../screens/SignUp'
 import styles from '../styles/Home.module.css'
 import { theme } from '../styles/theme'
 import { jsx, css } from '@emotion/react'
 
-
-const Home: NextPage = () => { //things to look: hooks, context, thinking react (thinking in components)
+const Home: NextPage = () => { 
   const ScreenSwitch = () => {
     const { isAuthenticated } = useMoralis()
     const [isSignedUp, setIsSignedUp] = useState(false)
     return (
       isAuthenticated ?
         isSignedUp ?
-          <Homepage />
+          <Homepage name="The Forum">
+            <Chat/>
+            <SearchBar/>
+            <DaoTable/>
+          </Homepage>
           :
           <SignUp />
         :
