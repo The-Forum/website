@@ -6,10 +6,8 @@ export const theme = createTheme({
             main: '#000c66',
         },
         secondary: {
-            light: '#0066ff',
             main: '#faebd7',
             // dark: will be calculated from palette.secondary.main,
-            contrastText: '#ffcc00',
         },
         // Used by `getContrastText()` to maximize the contrast between
         // the background and the text.
