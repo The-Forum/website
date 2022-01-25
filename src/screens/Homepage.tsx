@@ -25,10 +25,10 @@ export function Chat(){
 
 export function DaoTable(props: any){
     return (
-        <DaoTable>
+        <div>
             <DaoHeader/>
             <DaoList/>
-        </DaoTable>
+        </div>
     )
 }
 
