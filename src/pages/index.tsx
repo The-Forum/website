@@ -18,14 +18,20 @@ import { userData } from '../util/types'
 const Home: NextPage = () => {
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userData | undefined)
+    const [loadingUserData, setLoadingUserData] = useState(true)
     const { Moralis } = useMoralis()
     useEffect(() => {
       if (Moralis.account) {
-        return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => setUserData(doc.data() as userData | undefined))
+        return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => {
+          console.log("hi")
+          console.log(doc.data())
+          setUserData(doc.data() as userData | undefined)
+          setLoadingUserData(false)
+        })
       }
     }, [Moralis.account])
     return (
-      Moralis.account ?
+      Moralis.account && !loadingUserData ?
         userData && userData.preferences ?
           <Homepage />
           :
