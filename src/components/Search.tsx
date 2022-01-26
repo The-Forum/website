@@ -17,3 +17,4 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
       marginLeft: `calc(1em + ${theme.spacing(4)})`
     }
 }));
+ 
