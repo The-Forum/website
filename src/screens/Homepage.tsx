@@ -19,6 +19,7 @@ export function Homepage() {
     );  
 }
 
+
 export function Header(){
   //Initializes user state hook
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
