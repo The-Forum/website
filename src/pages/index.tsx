@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { MoralisProvider, useMoralis } from 'react-moralis'
-import { Homepage } from '../screens/Homepage'
+import { Homepage, Header } from '../screens/Homepage'
 import { Login } from '../screens/Login'
 import { SignUp } from '../screens/SignUp'
 import styles from '../styles/Home.module.css'
@@ -15,7 +15,9 @@ import { collection, doc, DocumentData, DocumentSnapshot, getFirestore, onSnapsh
 import { userData } from '../util/types'
 
 
-const Home: NextPage = () => {
+
+
+const Home: NextPage = () => { 
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userData | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
