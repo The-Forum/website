@@ -7,7 +7,8 @@ export function Homepage() {
     return (
         <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
             <HeaderBar />
-            <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1 }}>
+            <Toolbar />
+            <Box component="div" sx={{ flexDirection: "row", display: "flex", position: "relative", }}>
                 <Sidebar />
                 <DaoListHeader />
             </Box>
@@ -27,7 +28,6 @@ export function DaoTable() {
 function DaoListHeader() {
     return (
         <div>
-            <Toolbar />
             <h1>This is the Dao Header!</h1>
         </div>
     )

@@ -10,13 +10,17 @@ export const Sidebar = () => {
                 width: 300,
                 height: "100%",
                 flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+                position: "relative",
+                [`& .MuiDrawer-paper`]: {
+                    width: 300, boxSizing: 'border-box'
+                },
             }}
         >
+            <Toolbar />
             <Box sx={{ height: 200, maxHeight: 500, marginBottom: 0, display: "flex", flexDirection: "column" }}>
                 <Chat />
             </Box>
-        </Drawer>
+        </Drawer >
     )
 }/*        <Box component="div" sx={{
             backgroundColor: "secondary.main",
