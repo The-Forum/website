@@ -9,8 +9,8 @@ export function Homepage() {
             <HeaderBar />
             <Toolbar />
             <Box component="div" sx={{ flexDirection: "row", display: "flex", flex: 1, position: "relative" }}>
-                <Sidebar />
                 <DaoListHeader />
+                <Sidebar />
             </Box>
         </Box>
     );

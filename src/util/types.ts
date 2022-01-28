@@ -14,3 +14,11 @@ export interface message {
         "avatar": string
     },
 }
+export interface dao {
+    backgroundImage: string,
+    discord_link: string,
+    id: string,
+    name: string,
+    text: string,
+    twitter_link: string
+}

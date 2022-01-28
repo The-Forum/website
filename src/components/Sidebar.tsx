@@ -5,7 +5,7 @@ import { Chat } from "./ChatBox"
 //this one might be better as a chat component: https://www.npmjs.com/package/react-chat-widget
 export const Sidebar = () => {
     return (
-        <Drawer anchor="left" variant="permanent"
+        <Drawer anchor="right" variant="permanent"
             sx={{
                 width: 300,
                 height: "100%",
