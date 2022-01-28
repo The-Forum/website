@@ -2,5 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
 }
+const withTM = require('next-transpile-modules')(['react-chatbox-component']);
 
-module.exports = nextConfig
+module.exports = withTM({ nextConfig });

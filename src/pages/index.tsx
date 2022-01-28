@@ -1,17 +1,15 @@
 import { ThemeProvider } from '@mui/system'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { MoralisProvider, useMoralis } from 'react-moralis'
-import { Homepage, Header } from '../screens/Homepage'
+import { Homepage } from '../screens/Homepage'
 import { Login } from '../screens/Login'
 import { SignUp } from '../screens/SignUp'
 import styles from '../styles/Home.module.css'
 import { theme } from '../styles/theme'
-import { jsx, css } from '@emotion/react'
 import { firebaseApp } from '../util/firebaseConnection'
-import { collection, doc, DocumentData, DocumentSnapshot, getFirestore, onSnapshot, orderBy, query } from "firebase/firestore";
+import { doc, getFirestore, onSnapshot} from "firebase/firestore";
 import { userData } from '../util/types'
 
 

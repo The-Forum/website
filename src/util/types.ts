@@ -4,3 +4,13 @@ export type preference = typeof preferences[number];
 export interface userData {
     preferences?: preference[]
 }
+
+export interface message {
+    "text": string,
+    "id": number,
+    "sender": {
+        "name": string
+        "uid": string
+        "avatar": string
+    },
+}
