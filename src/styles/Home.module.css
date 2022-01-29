@@ -20,8 +20,16 @@
   align-items: center;
 }
 .daodetailtext{
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.95);
   z-index: 1;
+}
+.frame{
+  flex:1;
+  margin:0;
+  display:flex;
+}
+.daodetailheader{
+  padding:100;
 }
 /*
 .footer {

@@ -20,5 +20,6 @@ export interface dao {
     id: string,
     name: string,
     text: string,
-    twitter_link: string
+    twitter_link: string,
+    categories: preference[]
 }

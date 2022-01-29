@@ -8,12 +8,11 @@ export const Sidebar = () => {
         <Drawer anchor="right" variant="permanent"
             sx={{
                 width: 300,
-                height: "100%",
                 flexShrink: 0,
                 [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
             }}
         >
-            <Box sx={{ height: 200, maxHeight: 500, marginBottom: 0, display: "flex", flexDirection: "column" }}>
+            <Box sx={{ marginBottom: 0, display: "flex", flexDirection: "column", flex: 1 }}>
                 <Chat />
             </Box>
         </Drawer>
