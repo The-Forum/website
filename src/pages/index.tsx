@@ -32,14 +32,13 @@ const Home: NextPage = () => {
       }
     }, [Moralis.account])
     return (
-      /* Moralis.account && !loadingUserData ?
-         userData && userData.preferences ?
-           <Homepage />
-           :
-           <SignUp />
-         :
-         <Login>*/
-      <Daodetail daoID='daos1'></Daodetail>
+      Moralis.account && !loadingUserData ?
+        userData && userData.preferences ?
+          <Daodetail daoID='daos1' />
+          :
+          <SignUp />
+        :
+        <Login />
     )
   }
   return (

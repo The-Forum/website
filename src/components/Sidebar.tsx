@@ -10,7 +10,7 @@ export const Sidebar = () => {
                 style: {
                     marginTop: 50,
                     position: "fixed",
-                    height: "100%",
+                    height: "90%",
                     paddingBottom: 0
                 }
             }}
@@ -22,7 +22,9 @@ export const Sidebar = () => {
                 },
             }}
         >
-            <Box sx={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
+            <Box sx={{
+                marginBottom: 0, height: "50", flexDirection: "column"
+            }}>
                 <Chat />
             </Box>
         </Drawer >

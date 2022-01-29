@@ -28,7 +28,7 @@ export function HeaderBar(props: { topLeft?: () => ReactNode }) {
                             <SearchIconWrapper sx={{ height: '100%', position: 'absolute', display: "flex", alignItems: "center", color: "primary.main" }}>
                                 <SearchIcon />
                             </SearchIconWrapper>
-                            <InputBase fullWidth placeholder="Discover DAO on The Forum" inputProps={{ 'aria-label': 'search' }} sx={{ paddingLeft: 6 }} />
+                            <InputBase fullWidth placeholder="Search for DAOs on The Forum" inputProps={{ 'aria-label': 'search' }} sx={{ paddingLeft: 6 }} />
                         </Search>
                     </Grid>
                     <Grid item sx={{ display: "flex", width: "400px", columnGap: 2 }}>
@@ -65,7 +65,7 @@ export function HeaderBar(props: { topLeft?: () => ReactNode }) {
                     </Grid>
                 </Grid>
             </AppBar>
-            <Box sx={{ zIndex: 100000000, position: "fixed", marginTop: 6 }}>
+            <Box sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: "fixed", marginTop: 6, boxShadow: 1 }}>
                 {props.topLeft && props.topLeft()}
             </Box>
         </Box>
