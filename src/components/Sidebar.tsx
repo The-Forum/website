@@ -6,16 +6,26 @@ import { Chat } from "./ChatBox"
 export const Sidebar = () => {
     return (
         <Drawer anchor="right" variant="permanent"
+            PaperProps={{
+                style: {
+                    marginTop: 50,
+                    position: "fixed",
+                    height: "100%",
+                    paddingBottom: 0
+                }
+            }}
             sx={{
                 width: 300,
                 flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+                [`& .MuiDrawer-paper`]: {
+                    width: 300, boxSizing: 'border-box'
+                },
             }}
         >
-            <Box sx={{ marginBottom: 0, display: "flex", flexDirection: "column", flex: 1 }}>
+            <Box sx={{ marginBottom: 0, display: "flex", flexDirection: "column" }}>
                 <Chat />
             </Box>
-        </Drawer>
+        </Drawer >
     )
 }/*        <Box component="div" sx={{
             backgroundColor: "secondary.main",
