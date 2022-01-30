@@ -2,8 +2,8 @@ import { AppBar, Avatar, Box, Button,Grid, IconButton, InputBase, Menu, MenuItem
 import styles from '../styles/Home.module.css'
 import SearchIcon from '@mui/icons-material/Search';
 import { userMenuItems } from "../util/types";
-import { useState } from "react";
-import {Search, SearchIconWrapper} from './Search';
+import React, { ReactNode, useState } from "react";
+import { Search, SearchIconWrapper } from './Search';
 
 // To-do
 //Add menu on the header bar
@@ -12,7 +12,7 @@ import {Search, SearchIconWrapper} from './Search';
 /*
 Component displays a responsive app bar on the Homepage
 */
-export function HeaderBar() {
+export function HeaderBar(props: { topLeft?: () => ReactNode }) {
     //Initializes user state hook
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -70,5 +70,5 @@ export function HeaderBar() {
             </Grid>
         </AppBar>
     </Box>
-    );
+  );
 }
