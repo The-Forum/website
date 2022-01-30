@@ -34,7 +34,7 @@ const Home: NextPage = () => {
     return (
       Moralis.account && !loadingUserData ?
         userData && userData.preferences ?
-          <Daodetail daoID='daos1' />
+          <Homepage/>
           :
           <SignUp />
         :
