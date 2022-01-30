@@ -7,9 +7,10 @@ export function Homepage() {
     return (
         <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
             <HeaderBar />
-            <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1 }}>
-                <Sidebar />
+            <Toolbar />
+            <Box component="div" sx={{ flexDirection: "row", display: "flex", flex: 1, position: "relative", marginTop: "80" }}>
                 <DaoListHeader />
+                <Sidebar />
             </Box>
         </Box>
     );

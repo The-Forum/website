@@ -5,18 +5,29 @@ import { Chat } from "./ChatBox"
 //this one might be better as a chat component: https://www.npmjs.com/package/react-chat-widget
 export const Sidebar = () => {
     return (
-        <Drawer anchor="left" variant="permanent"
+        <Drawer anchor="right" variant="permanent"
+            PaperProps={{
+                style: {
+                    marginTop: 50,
+                    position: "fixed",
+                    height: "90%",
+                    paddingBottom: 0
+                }
+            }}
             sx={{
                 width: 300,
-                height: "100%",
                 flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: 300, boxSizing: 'border-box' },
+                [`& .MuiDrawer-paper`]: {
+                    width: 300, boxSizing: 'border-box'
+                },
             }}
         >
-            <Box sx={{ height: 200, maxHeight: 500, marginBottom: 0, display: "flex", flexDirection: "column" }}>
+            <Box sx={{
+                marginBottom: 0, height: "50", flexDirection: "column"
+            }}>
                 <Chat />
             </Box>
-        </Drawer>
+        </Drawer >
     )
 }/*        <Box component="div" sx={{
             backgroundColor: "secondary.main",

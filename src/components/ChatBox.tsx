@@ -1,5 +1,5 @@
 import 'react-chatbox-component/dist/style.css';
-import { ChatBox } from 'react-chatbox-component';
+import { ChatBox } from 'react-chatbox-component'
 import { useEffect, useState } from 'react';
 import { addDoc, collection, getFirestore, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { firebaseApp } from '../util/firebaseConnection';
@@ -16,25 +16,27 @@ export const Chat = () => {
             setMessages(messages)
         })
     }, [])
-    return (
-        <ChatBox
-            messages={messages}
-            user={{
-                "uri": Moralis.account,
-                "name": Moralis.account,
-                "avatar": "https://data.cometchat.com/assets/images/avatars/ironman.png",
-            }}
-            onSubmit={(text: string) => {
-                addDoc(collection(getFirestore(firebaseApp), "messages"), {
-                    text: text,
-                    id: messages.length + 1,
-                    sender: {
-                        "uri": Moralis.account,
-                        "name": Moralis.account,
-                        "avatar": "https://data.cometchat.com/assets/images/avatars/ironman.png",
-                    }
-                })
-            }}
-        />
-    )
+    if (Moralis.account)
+        return (
+            <ChatBox
+                messages={messages}
+                user={{
+                    "uid": Moralis.account,
+                }}
+                onSubmit={(text: string) => {
+                    addDoc(collection(getFirestore(firebaseApp), "messages"), {
+                        text: text,
+                        id: messages.length + 1,
+                        sender: {
+                            "uid": Moralis.account,
+                            "name": Moralis.account,
+                            "avatar": "https://data.cometchat.com/assets/images/avatars/ironman.png",
+                        }
+                    })
+                }}
+            />
+        )
+    else {
+        return null
+    }
 }
