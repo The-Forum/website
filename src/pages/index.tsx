@@ -9,13 +9,14 @@ import { SignUp } from '../screens/SignUp'
 import styles from '../styles/Home.module.css'
 import { theme } from '../styles/theme'
 import { firebaseApp } from '../util/firebaseConnection'
-import { doc, getFirestore, onSnapshot} from "firebase/firestore";
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import { userData } from '../util/types'
+import { Daodetail } from './Daodetail'
 
 
 
 
-const Home: NextPage = () => { 
+const Home: NextPage = () => {
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userData | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
@@ -33,7 +34,7 @@ const Home: NextPage = () => {
     return (
       Moralis.account && !loadingUserData ?
         userData && userData.preferences ?
-          <Homepage />
+          <Daodetail daoID='daos1' />
           :
           <SignUp />
         :
