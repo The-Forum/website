@@ -22,40 +22,42 @@ export function Daodetail(props: { daoID: string }) {
             const snapshot = (await transaction.get(docRef)).data() as userDataType
             let joinedDAOlist: string[]
             if (!snapshot || !snapshot.joinedDAOs || snapshot.joinedDAOs!.indexOf(dao.id) == -1)
-                joinedDAOlist = snapshot.joinedDAOs ? [...snapshot.joinedDAOs, snapshot.joinedDAOs] : [snapshot.joinedDAOs]
+                joinedDAOlist = snapshot.joinedDAOs ? [...snapshot.joinedDAOs, dao.id] : [dao.id]
             else
-                joinedDAOlist = snapshot.joinedDAOs.filter(tmp => tmp != dao.id)) //take it from here
-        transaction.update(docRef, { ...updatedElement, lastEdited: Date.now() })
-    })
-}
-function onDAOUpdate(doc: DocumentSnapshot) {
-    const thisDAO = doc.data()! as dao
-    setDao({ ...thisDAO, joined: userData.joinedDAOs.findIndex(dao => dao = thisDAO.id) > -1 })
-    setInitializing(false)
-}
-useEffect(() => {
-    return onSnapshot(doc(firestore, "daos", props.daoID), onDAOUpdate)
-}, [])
-return (
-    <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
-        <HeaderBar topLeft={() =>
-            <Box sx={{ backgroundColor: "secondary.main", width: 200 }}>
-                <Box sx={{ paddingLeft: 1, paddingBottom: 0.25, flexDirection: "row", display: "flex", justifyContent: "center" }}>
-                    <h3>{!initializing && dao.name}</h3>
-                    <IconButton ><CloseIcon /></IconButton>
-                </Box>
-                {!dao.joined ?
-                    <Button variant="contained" sx={{ width: 180, margin: 1 }} href={toggleDAOjoined}>Join DAO</Button>
-                    :
-                    <Button variant="outlined" sx={{ width: 180, margin: 1 }} href={toggleDAOjoined}>Leave DAO</Button>
-                }
-            </Box>} />
-        <Box component="div" sx={{ flexDirection: "row", display: "flex", flex: 1, position: "relative", marginTop: 6 }}>
-            {!initializing && Content(dao)}
-            <Sidebar width={300} chatBoxHeight={200} />
+                joinedDAOlist = snapshot.joinedDAOs.filter(tmp => tmp != dao.id)
+            transaction.update(docRef, { joinedDAOs: joinedDAOlist })
+        })
+    }
+    function onDAOUpdate(doc: DocumentSnapshot) {
+        const thisDAO = doc.data()! as dao
+        console.log(props.daoID)
+        console.log(doc.data())
+        setDao({ ...thisDAO, joined: userData.joinedDAOs ? userData.joinedDAOs!.findIndex(dao => dao = thisDAO.id) > -1 : false })
+        setInitializing(false)
+    }
+    useEffect(() => {
+        return onSnapshot(doc(firestore, "daos", props.daoID), onDAOUpdate)
+    }, [])
+    return (
+        <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
+            <HeaderBar topLeft={() =>
+                <Box sx={{ backgroundColor: "secondary.main", width: 200 }}>
+                    <Box sx={{ paddingLeft: 1, paddingBottom: 0.25, flexDirection: "row", display: "flex", justifyContent: "center" }}>
+                        <h3>{!initializing && dao.name}</h3>
+                        <IconButton ><CloseIcon /></IconButton>
+                    </Box>
+                    {!dao.joined ?
+                        <Button variant="contained" sx={{ width: 180, margin: 1 }} onClick={toggleDAOjoined}>Join DAO</Button>
+                        :
+                        <Button variant="outlined" sx={{ width: 180, margin: 1 }} onClick={toggleDAOjoined}>Leave DAO</Button>
+                    }
+                </Box>} />
+            <Box component="div" sx={{ flexDirection: "row", display: "flex", flex: 1, position: "relative", marginTop: 6 }}>
+                {!initializing && Content(dao)}
+                <Sidebar width={300} chatBoxHeight={200} />
+            </Box>
         </Box>
-    </Box>
-);
+    );
 }
 const Content = (dao: dao) => {
     return (

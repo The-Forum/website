@@ -33,7 +33,7 @@ const Home: NextPage = () => {
       Moralis.account && !loadingUserData ?
         userData && userData.preferences ?
           <UserDataContext.Provider value={userData}>
-            <Homepage />
+            <Daodetail daoID="daos1" />{/*<Homepage />*/}
           </UserDataContext.Provider>
           :
           <SignUp />
