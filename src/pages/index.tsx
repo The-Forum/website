@@ -10,15 +10,13 @@ import styles from '../styles/Home.module.css'
 import { theme } from '../styles/theme'
 import { firebaseApp } from '../util/firebaseConnection'
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
-import { userData } from '../util/types'
+import { UserDataContext, userDataType } from '../util/types'
 import { Daodetail } from './Daodetail'
-
-
 
 
 const Home: NextPage = () => {
   const ScreenSwitch = () => {
-    const [userData, setUserData] = useState({} as userData | undefined)
+    const [userData, setUserData] = useState({} as userDataType | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
     const { Moralis } = useMoralis()
     useEffect(() => {
@@ -26,7 +24,7 @@ const Home: NextPage = () => {
         return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => {
           console.log("hi")
           console.log(doc.data())
-          setUserData(doc.data() as userData | undefined)
+          setUserData({ ...doc.data(), id: Moralis.account } as userDataType | undefined)
           setLoadingUserData(false)
         })
       }
@@ -34,7 +32,9 @@ const Home: NextPage = () => {
     return (
       Moralis.account && !loadingUserData ?
         userData && userData.preferences ?
-          <Homepage/>
+          <UserDataContext.Provider value={userData}>
+            <Homepage />
+          </UserDataContext.Provider>
           :
           <SignUp />
         :

@@ -7,12 +7,12 @@ import { financeDao } from "../components/DaoList";
 
 export function Homepage() {
     return (
-        <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%", backgroundColor:"secondary.main" }}>
+        <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%", backgroundColor: "secondary.main" }}>
             <HeaderBar />
             <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1 }}>
-                <Sidebar width={300} chatBoxHeight={200}/>
-                <Box sx={{display:"flex", paddingBottom:"100%"}}>
-                    <DaoListHeader daoList={financeDao}/>
+                <Sidebar width={300} chatBoxHeight={200} />
+                <Box sx={{ display: "flex", paddingBottom: "100%" }}>
+                    <DaoListHeader daoList={financeDao} />
                 </Box>
             </Box>
         </Box>
