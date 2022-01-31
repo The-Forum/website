@@ -9,14 +9,14 @@ import styles from '../styles/Home.module.css'
 import Iframe from "react-iframe";
 import { style } from "@mui/system";
 import CloseIcon from '@mui/icons-material/Close';
-interface displayDAO extends dao {
-    joined: boolean
-}
+
 export function Daodetail(props: { daoID: string }) {
-    const [dao, setDao] = useState({} as displayDAO)
+    const [dao, setDao] = useState({} as dao)
     const [initializing, setInitializing] = useState(true)
     const userData = useContext(UserDataContext)
+    const [daoJoined, setDaoJoined] = useState(userData.joinedDAOs && userData.joinedDAOs!.findIndex(tmp => tmp = dao.id) > -1)
     async function toggleDAOjoined() {
+        setDaoJoined(!daoJoined)
         await runTransaction(firestore, async transaction => {
             const docRef = doc(firestore, "users", userData.id)
             const snapshot = (await transaction.get(docRef)).data() as userDataType
@@ -32,7 +32,7 @@ export function Daodetail(props: { daoID: string }) {
         const thisDAO = doc.data()! as dao
         console.log(props.daoID)
         console.log(doc.data())
-        setDao({ ...thisDAO, joined: userData.joinedDAOs ? userData.joinedDAOs!.findIndex(dao => dao = thisDAO.id) > -1 : false })
+        setDao(thisDAO)
         setInitializing(false)
     }
     useEffect(() => {
@@ -42,11 +42,11 @@ export function Daodetail(props: { daoID: string }) {
         <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
             <HeaderBar topLeft={() =>
                 <Box sx={{ backgroundColor: "secondary.main", width: 200 }}>
-                    <Box sx={{ paddingLeft: 1, paddingBottom: 0.25, flexDirection: "row", display: "flex", justifyContent: "center" }}>
-                        <h3>{!initializing && dao.name}</h3>
+                    <Box sx={{ paddingLeft: 1, paddingBottom: 0.25, flexDirection: "row", display: "flex", justifyContent: "center", }}>
+                        <h3 color="black">{!initializing && dao.name}</h3>
                         <IconButton ><CloseIcon /></IconButton>
                     </Box>
-                    {!dao.joined ?
+                    {daoJoined ?
                         <Button variant="contained" sx={{ width: 180, margin: 1 }} onClick={toggleDAOjoined}>Join DAO</Button>
                         :
                         <Button variant="outlined" sx={{ width: 180, margin: 1 }} onClick={toggleDAOjoined}>Leave DAO</Button>
