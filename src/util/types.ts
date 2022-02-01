@@ -27,4 +27,4 @@ export interface dao {
     twitter_link: string,
     categories: preference[],
 }
-export const UserDataContext = createContext(<userDataType>{})
+export const UserDataContext = createContext(<userDataType | undefined>{})

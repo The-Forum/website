@@ -1,24 +1,26 @@
 import { Box, Button, Grid, IconButton, Toolbar } from "@mui/material";
 import { doc, DocumentSnapshot, onSnapshot, runTransaction } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { HeaderBar } from "../components/Header";
-import { Sidebar } from "../components/Sidebar";
-import { firestore } from "../util/firebaseConnection";
-import { dao, UserDataContext, userDataType } from "../util/types";
-import styles from '../styles/Home.module.css'
+import { HeaderBar } from "../../../components/Header";
+import { Sidebar } from "../../../components/Sidebar";
+import { firestore } from "../../../util/firebaseConnection";
+import { dao, UserDataContext, userDataType } from "../../../util/types";
+import styles from '../../../styles/Home.module.css'
 import Iframe from "react-iframe";
 import { style } from "@mui/system";
 import CloseIcon from '@mui/icons-material/Close';
-
-export function Daodetail(props: { daoID: string }) {
+import { useRouter } from 'next/router'
+const Daodetail = () => {
+    const router = useRouter()
+    const { daoid } = router.query
     const [dao, setDao] = useState({} as dao)
     const [initializing, setInitializing] = useState(true)
     const userData = useContext(UserDataContext)
-    const [daoJoined, setDaoJoined] = useState(userData.joinedDAOs && userData.joinedDAOs!.findIndex(tmp => tmp = dao.id) > -1)
+    const [daoJoined, setDaoJoined] = useState(userData && userData.joinedDAOs && userData.joinedDAOs!.findIndex(tmp => tmp = dao.id) > -1)
     async function toggleDAOjoined() {
         setDaoJoined(!daoJoined)
         await runTransaction(firestore, async transaction => {
-            const docRef = doc(firestore, "users", userData.id)
+            const docRef = doc(firestore, "users", userData ? userData.id : "")
             const snapshot = (await transaction.get(docRef)).data() as userDataType
             let joinedDAOlist: string[]
             if (!snapshot || !snapshot.joinedDAOs || snapshot.joinedDAOs!.indexOf(dao.id) == -1)
@@ -30,14 +32,17 @@ export function Daodetail(props: { daoID: string }) {
     }
     function onDAOUpdate(doc: DocumentSnapshot) {
         const thisDAO = doc.data()! as dao
-        console.log(props.daoID)
+        console.log(daoid)
         console.log(doc.data())
         setDao(thisDAO)
         setInitializing(false)
     }
     useEffect(() => {
-        return onSnapshot(doc(firestore, "daos", props.daoID), onDAOUpdate)
-    }, [])
+        console.log("hiii")
+        console.log(daoid)
+        if (daoid)
+            return onSnapshot(doc(firestore, "daos", daoid!), onDAOUpdate)
+    }, [daoid])
     return (
         <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
             <HeaderBar topLeft={() =>
@@ -59,6 +64,7 @@ export function Daodetail(props: { daoID: string }) {
         </Box>
     );
 }
+export default Daodetail
 const Content = (dao: dao) => {
     return (
         <Box component="div" sx={{ loading: "lazy", backgroundImage: "url(" + dao.backgroundImage + ")", width: "100%", flex: 1, display: "flex" }}>

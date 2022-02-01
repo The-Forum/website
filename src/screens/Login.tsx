@@ -1,11 +1,13 @@
 
 import { CSSProperties } from "@emotion/serialize"
-import { Box, Button } from "@mui/material"
+import { Box, Button, useTheme } from "@mui/material"
 import { useMoralis } from "react-moralis"
 import styles from '../styles/Home.module.css'
 
 export const Login = () => {
     const { authenticate } = useMoralis()
+    console.log("moin")
+    const theme = useTheme()
     return (
         <Box component="div" sx={{
             backgroundColor: "secondary.main",
