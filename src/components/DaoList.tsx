@@ -1,6 +1,10 @@
-import { Box, Grid, ImageList, ImageListItem, ImageListItemBar, Toolbar, Typography } from "@mui/material";
+import { Box, getDialogContentUtilityClass, Grid, ImageList, ImageListItem, ImageListItemBar, Toolbar, Typography } from "@mui/material";
 import  Link from "@mui/material/Link";
 import { dao } from "../util/types";
+import { firestore } from "../util/firebaseConnection";
+import { collection, doc, DocumentReference, DocumentSnapshot, FirestoreError, getDoc, getDocs, getFirestore, query ,onSnapshot, QuerySnapshot } from 'firebase/firestore';
+import { useEffect, useState } from "react";
+import { delBasePath } from "next/dist/shared/lib/router/router";
 
 /*
 // Design
@@ -24,7 +28,7 @@ export let financeDao: dao[] = [
     name: "ShineDAO",
     backgroundImage: "https://shinedao.finance/static/shineAnimatedRocket-5d92da631e0a8da4c2ea248696a76eb4.gif",
     text:  "This DAO rocks !",
-    discord_link: "https://discord.com/invite/QkhbP7bZrj",
+    discord_link: "http://localhost:3000/Daodetail",
     twitter_link: "https://twitter.com/ShineDAO_/",
     categories: ["finance"],
 
@@ -76,6 +80,11 @@ export let financeDao: dao[] = [
 Displays a list of DAO whose categories match user preferences
 To-do : connect firebase database, read "users/:walletId" collection, store topics on a data structure
 Query our backend to get DAO where "categories" key matches user preferences
+
+
+To-do
+When clicking on the image, you should be redirected to the dao detail page
+Construct dynamic api routes
 */
 function UserPreferencesDao(){
 }
@@ -116,6 +125,9 @@ export function DaoListHeader(props : {daoList: dao[]}) {
                 </ImageListItem>
                 ))}
             </ImageList>
+            <Typography>
+                <h2>This is the DAO: {}</h2>
+            </Typography>
         </Box>
     )
 }
