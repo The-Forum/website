@@ -9,12 +9,14 @@ import { firebaseApp } from '../util/firebaseConnection'
 import { UserDataContext, userDataType } from '../util/types'
 import styles from "../styles/Home.module.css"
 import { ThemeProvider, useTheme } from '@mui/material'
+import { EgldSendTransaction } from '@tatumio/tatum'
 function MyApp({ Component, pageProps }: AppProps) {
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userDataType | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
     const { Moralis } = useMoralis()
     useEffect(() => {
+      console.log("you shouldnt see this too often!!")
       if (Moralis.account) {
         return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => {
           console.log("hi")
@@ -26,11 +28,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         setLoadingUserData(false)
       }
     }, [Moralis.account])
-    return (
-      <UserDataContext.Provider value={userData}>
-        {!loadingUserData && <Component {...pageProps} />}
-      </UserDataContext.Provider >
-    )
+    if (!loadingUserData)
+      return (
+        <UserDataContext.Provider value={userData}>
+          <Component {...pageProps} />
+        </UserDataContext.Provider >
+      )
+    else return null
   }
   return (
     <Fragment>
@@ -39,16 +43,15 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="The Forum" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MoralisProvider appId="3l6L6Gnoscz18tIvMaoCnTdwpNZ5mq0WJwOz2RTz" serverUrl="https://g3iyt7qela3c.usemoralis.com:2053/server">
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <MoralisProvider appId="3l6L6Gnoscz18tIvMaoCnTdwpNZ5mq0WJwOz2RTz" serverUrl="https://g3iyt7qela3c.usemoralis.com:2053/server">
           <div className={styles.container}>
             <main className={styles.main}>
               <ScreenSwitch />
             </main>
           </div>
-        </ThemeProvider>
-      </MoralisProvider>
-
+        </MoralisProvider>
+      </ThemeProvider>
     </Fragment>
   )
 }
