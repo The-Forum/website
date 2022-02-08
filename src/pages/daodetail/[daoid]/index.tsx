@@ -16,24 +16,28 @@ import { style } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
-const Daodetail = () => {
+const Daodetail = (props: { userData: userDataType }) => {
   const router = useRouter();
   const { daoid } = router.query;
   const [dao, setDao] = useState({} as dao);
   const [initializing, setInitializing] = useState(true);
   const { user } = useMoralis();
   console.log("user");
-  console.log(user && user!.attributes); //use this instead
-  const userData = useContext(UserDataContext);
+  console.log(user && user!.attributes);
   const [daoJoined, setDaoJoined] = useState(
-    userData &&
-      userData.joinedDAOs &&
-      userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
+    props.userData &&
+      dao &&
+      props.userData.joinedDAOs &&
+      props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
   );
   async function toggleDAOjoined() {
     setDaoJoined(!daoJoined);
     await runTransaction(firestore, async (transaction) => {
-      const docRef = doc(firestore, "users", userData ? userData.id : "");
+      const docRef = doc(
+        firestore,
+        "users",
+        props.userData ? props.userData.id : ""
+      );
       const snapshot = (await transaction.get(docRef)).data() as userDataType;
       let joinedDAOlist: string[];
       if (
@@ -52,7 +56,7 @@ const Daodetail = () => {
     const thisDAO = doc.data()! as dao;
     setDao(thisDAO);
     setInitializing(false);
-    console.log(userData?.joinedDAOs);
+    console.log(props.userData?.joinedDAOs);
   }
   useEffect(() => {
     console.log("hiii");
@@ -60,7 +64,7 @@ const Daodetail = () => {
     if (daoid) return onSnapshot(doc(firestore, "daos", daoid!), onDAOUpdate);
   }, [daoid]);
   console.log("userdata");
-  console.log(userData);
+  console.log(props.userData);
   if (!initializing) {
     return (
       <Box
@@ -73,7 +77,7 @@ const Daodetail = () => {
         }}
       >
         <HeaderBar
-          userId={userData && userData.id}
+          userId={props.userData && props.userData.id}
           topLeft={() =>
             dao && (
               <Box sx={{ backgroundColor: "secondary.main", width: 200 }}>
@@ -91,8 +95,8 @@ const Daodetail = () => {
                     <CloseIcon />
                   </IconButton>
                 </Box>
-                {userData &&
-                  userData.joinedDAOs &&
+                {props.userData &&
+                  props.userData.joinedDAOs &&
                   (!daoJoined ? (
                     <Button
                       variant="contained"
@@ -133,6 +137,8 @@ const Daodetail = () => {
 };
 export default Daodetail;
 const Content = (dao: dao) => {
+  console.log("dao");
+  console.log(dao);
   if (dao) {
     return (
       <Box
@@ -186,6 +192,7 @@ const Content = (dao: dao) => {
                 variant="contained"
                 sx={{ flex: 1, display: "flex", margin: 1 }}
                 href={"https://twitter.com/" + dao.links.twitter_screen_name}
+                target="_blank"
               >
                 Twitter
               </Button>
@@ -195,6 +202,7 @@ const Content = (dao: dao) => {
                 variant="contained"
                 sx={{ flex: 1, display: "flex", margin: 1 }}
                 href={dao.links.chat_url[0]}
+                target="_blank"
               >
                 Discord
               </Button>

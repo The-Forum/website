@@ -15,7 +15,7 @@ import { useMoralis } from "react-moralis";
 import { MessageSharp } from "@mui/icons-material";
 export const Chat = () => {
   const [messages, setMessages] = useState([] as message[]);
-  const { Moralis } = useMoralis();
+  const { Moralis, user } = useMoralis();
   useEffect(() => {
     return onSnapshot(
       query(
@@ -29,20 +29,20 @@ export const Chat = () => {
       }
     );
   }, []);
-  if (Moralis.account)
+  if (user.attributes.ethAddress)
     return (
       <ChatBox
         messages={messages}
         user={{
-          uid: Moralis.account,
+          uid: user.attributes.ethAddress,
         }}
         onSubmit={(text: string) => {
           addDoc(collection(getFirestore(firebaseApp), "messages"), {
             text: text,
             id: messages.length + 1,
             sender: {
-              uid: Moralis.account,
-              name: Moralis.account,
+              uid: user.attributes.ethAddress,
+              name: user.attributes.ethAddress,
               avatar:
                 "https://data.cometchat.com/assets/images/avatars/ironman.png",
             },

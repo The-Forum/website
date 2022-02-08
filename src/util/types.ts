@@ -1,3 +1,4 @@
+import Moralis from "moralis/types";
 import { createContext } from "react";
 
 export const preferences = [
@@ -30,7 +31,6 @@ export interface userDataType {
   joinedDAOs?: string[];
   id: string;
 }
-
 export interface message {
   text: string;
   id: number;

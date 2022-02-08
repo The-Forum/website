@@ -14,25 +14,32 @@ function MyApp({ Component, pageProps }: AppProps) {
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userDataType | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
-    const { Moralis } = useMoralis()
+    const { Moralis,isAuthenticated,user } = useMoralis()
     useEffect(() => {
       console.log("you shouldnt see this too often!!")
-      if (Moralis.account) {
-        return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => {
+      console.log(user&&user.attributes)
+      if (isAuthenticated) {
+        return onSnapshot(doc(getFirestore(firebaseApp), "users", user!.attributes.ethAddress), (doc) => {
           console.log("hi")
           console.log(doc.data())
-          setUserData({ ...doc.data(), id: Moralis.account } as userDataType | undefined)
+          setUserData({ ...doc.data(), id: user!.attributes.ethAddress } as userDataType | undefined)
           setLoadingUserData(false)
         })
       } else {
+        setUserData(undefined)
         setLoadingUserData(false)
       }
-    }, [Moralis.account])
+const unsubscribe = Moralis.onWeb3Deactivated((result) => {
+  Moralis.User.logOut()
+
+});
+
+    }, [isAuthenticated])
+    console.log("pageprops")
+    console.log(Component)
     if (!loadingUserData)
       return (
-        <UserDataContext.Provider value={userData}>
-          <Component {...pageProps} />
-        </UserDataContext.Provider >
+          <Component {...pageProps} userData={userData}/>
       )
     else return null
   }
