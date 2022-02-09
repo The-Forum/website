@@ -1,42 +1,32 @@
-import { Box, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
-import { HeaderBar } from '../components/Header';
+import { HeaderBar } from "../components/Header";
+import { DaoListHeader } from "../components/DaoList";
+import { financeDao } from "../components/DaoList";
 
 export function Homepage() {
-    return (
-        <Box component="div" sx={{ flexDirection: "column", display: "flex", flex: 1, width: "100%" }}>
-            <HeaderBar />
-            <Toolbar />
-            <Box component="div" sx={{ flexDirection: "row", display: "flex", position: "relative", }}>
-                <Sidebar />
-                <DaoListHeader />
-            </Box>
+  return (
+    <Box
+      component="div"
+      sx={{
+        flexDirection: "column",
+        display: "flex",
+        flex: 1,
+        width: "100%",
+        backgroundColor: "secondary.main",
+      }}
+    >
+      <HeaderBar />
+      <Box
+        component="div"
+        sx={{ flexDirection: "column", display: "flex", flex: 1 }}
+      >
+        <Sidebar width={300} chatBoxHeight={200} />
+        <Box sx={{ display: "flex", paddingBottom: "100%" }}>
+          <DaoListHeader daoList={financeDao} />
         </Box>
-    );
-}
-
-export function DaoTable() {
-    return (
-        <div>
-            <DaoListHeader />
-            <DaoList />
-        </div>
-    )
-}
-
-function DaoListHeader() {
-    return (
-        <div>
-            <h1>This is the Dao Header!</h1>
-        </div>
-    )
-}
-
-function DaoList() {
-    return (
-        <div>
-            <h1>This is the DaoList!</h1>
-        </div>
-    )
+      </Box>
+    </Box>
+  );
 }

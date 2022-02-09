@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/system'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { MoralisProvider, useMoralis } from 'react-moralis'
 import { Homepage } from '../screens/Homepage'
 import { Login } from '../screens/Login'
@@ -9,52 +9,22 @@ import { SignUp } from '../screens/SignUp'
 import styles from '../styles/Home.module.css'
 import { theme } from '../styles/theme'
 import { firebaseApp } from '../util/firebaseConnection'
-import { doc, getFirestore, onSnapshot} from "firebase/firestore";
-import { userData } from '../util/types'
+import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { UserDataContext, userDataType } from '../util/types'
+import { useTheme } from '@mui/material'
 
 
-
-
-const Home: NextPage = () => { 
-  const ScreenSwitch = () => {
-    const [userData, setUserData] = useState({} as userData | undefined)
-    const [loadingUserData, setLoadingUserData] = useState(true)
-    const { Moralis } = useMoralis()
-    useEffect(() => {
-      if (Moralis.account) {
-        return onSnapshot(doc(getFirestore(firebaseApp), "users", Moralis.account), (doc) => {
-          console.log("hi")
-          console.log(doc.data())
-          setUserData(doc.data() as userData | undefined)
-          setLoadingUserData(false)
-        })
-      }
-    }, [Moralis.account])
-    return (
-      Moralis.account && !loadingUserData ?
-        userData && userData.preferences ?
-          <Homepage />
-          :
-          <SignUp />
-        :
-        <Login />
-    )
-  }
+const Home: NextPage = () => {
+  const { Moralis } = useMoralis()
+  const userData = useContext(UserDataContext)
   return (
-    <MoralisProvider appId="3l6L6Gnoscz18tIvMaoCnTdwpNZ5mq0WJwOz2RTz" serverUrl="https://g3iyt7qela3c.usemoralis.com:2053/server">
-      <ThemeProvider theme={theme}>
-        <Head>
-          <title>The Forum</title>
-          <meta name="description" content="The Forum" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <div className={styles.container}>
-          <main className={styles.main}>
-            <ScreenSwitch />
-          </main>
-        </div>
-      </ThemeProvider>
-    </MoralisProvider>
+    Moralis.account ?
+      userData && userData.preferences ?
+        <Homepage />
+        :
+        <SignUp />
+      :
+      <Login />
   )
 }
 
