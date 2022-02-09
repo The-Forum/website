@@ -14,9 +14,11 @@ import {
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { userMenuItems } from "../util/types";
+
 import React, { Fragment, ReactNode, useState } from "react";
 import { Search, SearchIconWrapper } from "./Search";
 import { useMoralis } from "react-moralis";
+
 
 // To-do
 //Add menu on the header bar
@@ -41,6 +43,7 @@ export function HeaderBar(props: {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   return (
     <Box sx={{ flexgrow: 1 }}>
       <AppBar
