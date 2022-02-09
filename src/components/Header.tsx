@@ -14,8 +14,11 @@ import {
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { userMenuItems } from "../util/types";
-import React, { ReactNode, useState } from "react";
+
+import React, { Fragment, ReactNode, useState } from "react";
 import { Search, SearchIconWrapper } from "./Search";
+import { useMoralis } from "react-moralis";
+
 
 // To-do
 //Add menu on the header bar
@@ -24,7 +27,11 @@ import { Search, SearchIconWrapper } from "./Search";
 /*
 Component displays a responsive app bar on the Homepage
 */
-export function HeaderBar(props: { topLeft?: () => ReactNode }) {
+export function HeaderBar(props: {
+  topLeft?: () => ReactNode;
+  userId?: string;
+}) {
+  const { authenticate } = useMoralis();
   //Initializes user state hook
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -52,7 +59,7 @@ export function HeaderBar(props: { topLeft?: () => ReactNode }) {
           }}
         >
           <img
-            src="Forum_transparentBG.gif"
+            src="/Forum_transparentBG.gif"
             loading="lazy"
             className={styles.logo}
           />
@@ -93,33 +100,41 @@ export function HeaderBar(props: { topLeft?: () => ReactNode }) {
             </Button>
           </Grid>
           <Grid item sx={{ display: "flex", flexShrink: 0 }}>
-            <Tooltip title="Open User Menu">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {userMenuItems.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {props.userId ? (
+              <Fragment>
+                <Tooltip title="Open User Menu">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {userMenuItems.map((setting) => (
+                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Fragment>
+            ) : (
+              <Button onClick={() => authenticate()} variant="contained">
+                Connect Wallet
+              </Button>
+            )}
           </Grid>
         </Grid>
         <Box
