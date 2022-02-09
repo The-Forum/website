@@ -19,7 +19,7 @@ const Home: NextPage = (props:{userData:userDataType}) => {
   return (
     user&&user.attributes.ethAddress ?
       props.userData && props.userData.preferences ?
-        <Homepage />
+        <Homepage userData={props.userData} />
         :
         <SignUp />
       :
