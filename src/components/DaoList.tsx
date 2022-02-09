@@ -89,6 +89,8 @@ Write a query that gets all DAO based on user preferences
 export function DaoListHeader(props: { daoList: dao[] }) {
     let selectedDao = props.daoList;
     const [daos, setDaos] = useState([]);
+    
+    //Read DAOs from firestore on component mount
     useEffect(() => {
         const listDao : object[] = [];
         const getDaos = query(collection(firestore,"daos"));
@@ -100,8 +102,7 @@ export function DaoListHeader(props: { daoList: dao[] }) {
         })
         //Clean up funcion
         return () => dao();
-    }, []);
-    
+    }, []);  //empty dependecies --> executed once   
     return(
         <Box sx={{ paddingLeft: 2, marginTop: 8 }}>
             <Typography variant="h4" gutterBottom component="div" color="primary.main">
