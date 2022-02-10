@@ -1,6 +1,7 @@
 import {
   Box,
   ImageList,
+  imageListClasses,
   ImageListItem,
   ImageListItemBar,
   Typography,
@@ -16,9 +17,11 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import Image from "next/Image";
+import styles from "../styles/Home.module.css";
 
 export function DaoList(props: { title: string; categories: string[] }) {
-  const [daos, setDaos] = useState([] as dao[]);
+  const [daos, setDaos] = useState([] as (dao | {})[]);
 
   //Read DAOs from firestore on component mount
   useEffect(() => {
@@ -28,11 +31,13 @@ export function DaoList(props: { title: string; categories: string[] }) {
         where("categories", "array-contains-any", props.categories)
       )
     ).then((querySnapshot) => {
-      const listDao: dao[] = [];
+      const listDao = [] as dao[];
       querySnapshot.forEach((daoItem) => {
         listDao.push(daoItem.data() as dao);
       });
-      setDaos(listDao);
+      console.log("liiist");
+      console.log(listDao);
+      if (listDao && listDao.length > 0) setDaos(listDao);
     });
   }, [props.categories]); //empty dependecies --> executed once
   return (
@@ -48,30 +53,34 @@ export function DaoList(props: { title: string; categories: string[] }) {
           sx={{ display: "flex", flexDirection: "row", width: 1200 }}
           rowHeight={300}
         >
-          {daos.map((dao) => (
-            <ImageListItem key={dao.image}>
-              <img
-                src={`${dao.image}?fit=crop&auto=format`}
-                alt={dao.name}
-                loading="lazy"
-              />
-              <ImageListItemBar
-                title={dao.name}
-                subtitle={
-                  {
-                    /*<Link
+          {daos.map((dao, index) => {
+            console.log("daaao", dao);
+            if (dao != {})
+              return (
+                <ImageListItem key={index}>
+                  <img
+                    src={`${(dao as dao).image}`}
+                    className={styles.image}
+                    alt={(dao as dao).name}
+                    loading="lazy"
+                  />
+                  <ImageListItemBar
+                    title={(dao as dao).name}
+                    subtitle={
+                      "hii"
+                      /*{<Link
                     href={dao.discord_link}
                     underline="hover"
                     color="primary.main"
                   >
                     Discord
-                  </Link>*/
-                  }
-                }
-                position="below"
-              />
-            </ImageListItem>
-          ))}
+                  </Link>}*/
+                    }
+                    position="below"
+                  />
+                </ImageListItem>
+              );
+          })}
         </ImageList>
       </Typography>
     </Box>

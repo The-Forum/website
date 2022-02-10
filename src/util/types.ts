@@ -25,9 +25,12 @@ export const preferences = [
   "Web3.0",
 ];
 export const userMenuItems = ["Profile", "Account", "Logout"];
-export type preference = typeof preferences[number];
+export type topic = typeof preferences[number];
 export interface userDataType {
-  preferences?: preference[];
+  preferences?: {
+    topic: topic;
+    value: number;
+  }[];
   joinedDAOs?: string[];
   id: string;
 }

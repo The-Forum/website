@@ -13,17 +13,22 @@ export function Homepage(props: { userData: userDataType }) {
   );
 
   useEffect(() => {
-    getDoc(doc(firestore, "categories", "lookup")).then((doc) => {
+    getDoc(doc(firestore, "lookUp", "sE0YysJAsoFtox9h3Z0M")).then((doc) => {
       const daoCategories = doc.data() as { [key: string]: string[] };
       if (!doc.data())
         throw ReferenceError("Can't find DAO categories look up table");
       const tmpCategories = [] as { categories: string[]; label: string }[];
-      props.userData &&
+      const sortedPrefs =
+        props.userData &&
         props.userData.preferences &&
-        props.userData.preferences.forEach((preference) => {
+        props.userData.preferences.sort((a, b) =>
+          a.value > b.value ? 1 : b.value > a.value ? -1 : 0
+        );
+      sortedPrefs &&
+        sortedPrefs.forEach((preference) => {
           tmpCategories.push({
-            label: preference,
-            categories: daoCategories[preference],
+            label: preference.topic,
+            categories: daoCategories[preference.topic],
           });
         });
       setCategories(tmpCategories);
@@ -46,7 +51,13 @@ export function Homepage(props: { userData: userDataType }) {
         sx={{ flexDirection: "column", display: "flex", flex: 1 }}
       >
         <Sidebar width={300} chatBoxHeight={200} />
-        <Box sx={{ display: "flex", paddingBottom: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            paddingBottom: "100%",
+            flexDirection: "column",
+          }}
+        >
           {categories.map((category, index) => (
             <DaoList
               categories={category.categories}
