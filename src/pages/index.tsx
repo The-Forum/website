@@ -14,12 +14,11 @@ import { UserDataContext, userDataType } from '../util/types'
 import { useTheme } from '@mui/material'
 
 
-const Home: NextPage = () => {
-  const { Moralis } = useMoralis()
-  const userData = useContext(UserDataContext)
+const Home: NextPage = (props:{userData:userDataType}) => {
+  const { Moralis,user} = useMoralis()
   return (
-    Moralis.account ?
-      userData && userData.preferences ?
+    user&&user.attributes.ethAddress ?
+      props.userData && props.userData.preferences ?
         <Homepage />
         :
         <SignUp />
