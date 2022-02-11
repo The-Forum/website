@@ -3,7 +3,7 @@ import React from "react";
 import { Sidebar } from "../components/Sidebar";
 import { HeaderBar } from "../components/Header";
 import { DaoListHeader } from "../components/DaoList";
-import { financeDao } from "../components/DaoList";
+import { financeDao } from "../util/dummy";
 
 export function Homepage() {
   return (
