@@ -16,6 +16,7 @@ import { useTheme } from '@mui/material'
 
 const Home: NextPage = (props:{userData:userDataType}) => {
   const { Moralis,user} = useMoralis()
+  console.log("user",user&&user.attributes.ethAddress)
   return (
     user&&user.attributes.ethAddress ?
       props.userData && props.userData.preferences ?

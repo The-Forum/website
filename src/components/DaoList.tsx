@@ -20,26 +20,11 @@ import { useEffect, useState } from "react";
 import Image from "next/Image";
 import styles from "../styles/Home.module.css";
 
-export function DaoList(props: { title: string; categories: string[] }) {
-  const [daos, setDaos] = useState([] as (dao | {})[]);
-
-  //Read DAOs from firestore on component mount
-  useEffect(() => {
-    getDocs(
-      query(
-        collection(firestore, "daos"),
-        where("categories", "array-contains-any", props.categories)
-      )
-    ).then((querySnapshot) => {
-      const listDao = [] as dao[];
-      querySnapshot.forEach((daoItem) => {
-        listDao.push(daoItem.data() as dao);
-      });
-      console.log("liiist");
-      console.log(listDao);
-      if (listDao && listDao.length > 0) setDaos(listDao);
-    });
-  }, [props.categories]); //empty dependecies --> executed once
+export function DaoList(props: {
+  title: string;
+  daos: (dao | {})[];
+  moreDaos: () => void;
+}) {
   return (
     <Box sx={{ paddingLeft: 2, marginTop: 8 }}>
       <Typography
@@ -53,7 +38,7 @@ export function DaoList(props: { title: string; categories: string[] }) {
           sx={{ display: "flex", flexDirection: "row", width: 1200 }}
           rowHeight={300}
         >
-          {daos.map((dao, index) => {
+          {props.daos.map((dao, index) => {
             console.log("daaao", dao);
             if (dao != {})
               return (

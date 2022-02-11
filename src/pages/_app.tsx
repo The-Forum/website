@@ -18,8 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     useEffect(() => {
       console.log("you shouldnt see this too often!!")
       console.log(user&&user.attributes)
-      if (isAuthenticated) {
-        return onSnapshot(doc(getFirestore(firebaseApp), "users", user!.attributes.ethAddress), (doc) => {
+      if (user&&user.attributes&&user.attributes.ethAddress&&isAuthenticated) {
+        return onSnapshot(doc(getFirestore(firebaseApp), "users", user.attributes.ethAddress), (doc) => {
+          
           console.log("hi")
           console.log(doc.data())
           setUserData({ ...doc.data(), id: user!.attributes.ethAddress } as userDataType | undefined)
@@ -29,12 +30,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         setUserData(undefined)
         setLoadingUserData(false)
       }
-const unsubscribe = Moralis.onWeb3Deactivated((result) => {
-  Moralis.User.logOut()
-
-});
-
     }, [isAuthenticated])
+    useEffect(()=>{
+      const event=Moralis.onWeb3Deactivated((result) => {
+        Moralis.User.logOut()
+      });
+    },[])
     console.log("pageprops")
     console.log(Component)
     if (!loadingUserData)
