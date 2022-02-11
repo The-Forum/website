@@ -5,7 +5,11 @@ import {
   Button,
   Grid,
   IconButton,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
   InputBase,
+  Link,
   Menu,
   MenuItem,
   Tooltip,
@@ -14,11 +18,9 @@ import {
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { userMenuItems } from "../util/types";
-
 import React, { Fragment, ReactNode, useState } from "react";
-import { Search, SearchIconWrapper } from "./Search";
-import { useMoralis } from "react-moralis";
-
+import { SearchBar, SearchIconWrapper } from "./SearchBar";
+import { useRouter } from "next/router";
 
 // To-do
 //Add menu on the header bar
@@ -43,7 +45,8 @@ export function HeaderBar(props: {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
+  const router = useRouter();
+  
   return (
     <Box sx={{ flexgrow: 1 }}>
       <AppBar
@@ -64,7 +67,8 @@ export function HeaderBar(props: {
             className={styles.logo}
           />
           <Grid item sx={{ display: "flex", flexBasis: "500px" }}>
-            <Search
+          <Button sx={{ minWidth: 0, flexGrow: 1 }} onClick={() => router.push("/search")}>
+            <SearchBar
               sx={{
                 border: 2,
                 borderRadius: 5,
@@ -88,8 +92,9 @@ export function HeaderBar(props: {
                 placeholder="Discover DAO on The Forum"
                 inputProps={{ "aria-label": "search" }}
                 sx={{ paddingLeft: 6 }}
-              />
-            </Search>
+                inputMode="search"/>
+            </SearchBar>
+          </Button>
           </Grid>
           <Grid item sx={{ display: "flex", width: "400px", columnGap: 2 }}>
             <Button variant="contained" sx={{ minWidth: 0, flexGrow: 1 }}>
