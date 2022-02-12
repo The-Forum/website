@@ -11,28 +11,25 @@ export const Sidebar = (props: { width: number; chatBoxHeight: number }) => {
     <Drawer
       anchor="right"
       variant="permanent"
-      PaperProps={{
+      /*PaperProps={{
         style: {
-          marginTop: 50,
-          position: "fixed",
+          position: "relative",
           height: "90%",
           paddingBottom: 0,
         },
-      }}
+      }}*/
       sx={{
-        width: width,
+        width: 600,
         height: "100%",
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: { width: width, boxSizing: "border-box" },
       }}
     >
+      <Toolbar />
       <Box
         sx={{
-          height: chatBoxHeight,
-          maxHeight: 500,
           marginBottom: 0,
-          display: "flex",
-          flexDirection: "column",
+          display: "block",
         }}
       >
         <Chat />

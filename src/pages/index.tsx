@@ -12,6 +12,7 @@ import { firebaseApp } from '../util/firebaseConnection'
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import { UserDataContext, userDataType } from '../util/types'
 import { useTheme } from '@mui/material'
+import { Chat } from '../components/ChatBox'
 
 
 const Home: NextPage = (props:{userData:userDataType}) => {

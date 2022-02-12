@@ -13,6 +13,7 @@ import { firebaseApp } from "../util/firebaseConnection";
 import { message } from "../util/types";
 import { useMoralis } from "react-moralis";
 import { MessageSharp } from "@mui/icons-material";
+import styles from "../styles/Home.module.css";
 export const Chat = () => {
   const [messages, setMessages] = useState([] as message[]);
   const { Moralis, user } = useMoralis();
@@ -31,24 +32,27 @@ export const Chat = () => {
   }, []);
   if (user.attributes.ethAddress)
     return (
-      <ChatBox
-        messages={messages}
-        user={{
-          uid: user.attributes.ethAddress,
-        }}
-        onSubmit={(text: string) => {
-          addDoc(collection(getFirestore(firebaseApp), "messages"), {
-            text: text,
-            id: messages.length + 1,
-            sender: {
-              uid: user.attributes.ethAddress,
-              name: user.attributes.ethAddress,
-              avatar:
-                "https://data.cometchat.com/assets/images/avatars/ironman.png",
-            },
-          });
-        }}
-      />
+      <div className={styles.chat}>
+        Placeholder
+        {/*<ChatBox
+          messages={messages}
+          user={{
+            uid: user.attributes.ethAddress,
+          }}
+          onSubmit={(text: string) => {
+            addDoc(collection(getFirestore(firebaseApp), "messages"), {
+              text: text,
+              id: messages.length + 1,
+              sender: {
+                uid: user.attributes.ethAddress,
+                name: user.attributes.ethAddress,
+                avatar:
+                  "https://data.cometchat.com/assets/images/avatars/ironman.png",
+              },
+            });
+          }}
+        />*/}
+      </div>
     );
   else {
     return null;

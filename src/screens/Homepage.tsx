@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, List } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { HeaderBar } from "../components/Header";
 import { DaoList } from "../components/DaoList";
@@ -10,7 +10,9 @@ import {
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
+  QueryDocumentSnapshot,
   startAfter,
   startAt,
   where,
@@ -18,8 +20,12 @@ import {
 import { firestore } from "../util/firebaseConnection";
 import { dao, UserDataContext, userDataType } from "../util/types";
 import { setDefaultResultOrder } from "dns/promises";
-
+import { useWindowDimensions } from "../components/Hooks";
+import _ from "lodash";
+import InfiniteScroll from "react-infinite-scroll-component";
 export function Homepage(props: { userData: userDataType }) {
+  const { width, height } = useWindowDimensions();
+  const homepageWidth = width - 300 - 16;
   const [lastCategory, setLastCategory] = useState(-10 as number);
   const [categories, setCategories] = useState(
     [] as {
@@ -28,9 +34,11 @@ export function Homepage(props: { userData: userDataType }) {
     }[]
   );
   const [daos, setDaos] = useState([] as dao[][]);
-  const [lastDao, setLastDao] = useState([] as number[]);
+  const [lastDao, setLastDao] = useState(
+    [] as QueryDocumentSnapshot<DocumentData>[]
+  );
   const [initializing, setInitializing] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     getDoc(doc(firestore, "lookUp", "sE0YysJAsoFtox9h3Z0M")).then((doc) => {
       const daoCategories = doc.data() as { [key: string]: string[] };
@@ -65,15 +73,21 @@ export function Homepage(props: { userData: userDataType }) {
     }[],
     lastCategory: number
   ) {
-    const tmp = new Array(categories.length).fill([{}]) as dao[][];
+    const tmp = daos
+      ? daos
+      : (new Array(categories.length).fill([{}]) as dao[][]);
+    const lastDao = new Array(categories.length).fill(
+      {}
+    ) as QueryDocumentSnapshot<DocumentData>[];
     console.log("start");
     await Promise.all(
       categories.map(async (category, index) => {
-        if (index > lastCategory && index <= lastCategory + 3) {
+        if (index > lastCategory && index <= lastCategory + 4) {
           const querySnapshot = await getDocs(
             query(
               collection(firestore, "daos"),
               where("categories", "array-contains-any", category.categories),
+              orderBy("followersCount", "desc"),
               limit(10)
             )
           );
@@ -82,50 +96,58 @@ export function Homepage(props: { userData: userDataType }) {
           querySnapshot.forEach((daoItem) => {
             listDao.push(daoItem.data() as dao);
           });
-          console.log("liiist");
-          console.log(listDao);
-          if (listDao && listDao.length > 0) tmp[index] = listDao;
+          console.log("liiist", listDao);
+          if (listDao && listDao.length > 0) {
+            lastDao[index] = querySnapshot.docs.at(-1)!;
+            tmp[index] = listDao;
+          }
         }
       })
     );
     console.log("end");
     if (tmp != []) {
       setDaos(tmp.slice());
-      setLastDao(new Array(tmp.length).fill(10));
+      setLastDao(lastDao.slice());
     }
     setInitializing(false);
   }
   function moreDaos(categoryIndex: number) {
-    getDocs(
-      query(
-        collection(firestore, "daos"),
-        where(
-          "categories",
-          "array-contains-any",
-          categories[categoryIndex].categories
-        ),
-        limit(10),
-        startAt(lastDao[categoryIndex])
-      )
-    ).then((querySnapshot) => {
-      const listDao = daos;
-      querySnapshot.forEach((daoItem) => {
-        listDao[categoryIndex].push(daoItem.data() as dao);
+    if (!refreshing) {
+      getDocs(
+        query(
+          collection(firestore, "daos"),
+          where(
+            "categories",
+            "array-contains-any",
+            categories[categoryIndex].categories
+          ),
+          limit(10),
+          orderBy("followersCount", "desc"),
+          startAfter(lastDao[categoryIndex])
+        )
+      ).then((querySnapshot) => {
+        const listDao = daos;
+        querySnapshot.forEach((daoItem) => {
+          listDao[categoryIndex].push(daoItem.data() as dao);
+        });
+        console.log("more", listDao);
+        if (querySnapshot.docs && querySnapshot.docs.length > 0) {
+          setDaos(listDao.slice());
+          lastDao[categoryIndex] = querySnapshot.docs.at(-1)!;
+        }
       });
-      setDaos(listDao);
-    });
+      setRefreshing(true);
+    }
   }
-  console.log(daos);
-  console.log("init", initializing);
   return (
     <Box
       component="div"
       sx={{
-        flexDirection: "column",
-        display: "flex",
-        flex: 1,
+        display: "block",
         width: "100%",
         backgroundColor: "secondary.main",
+        height: "100%",
+        scrollBehavior: "smooth",
       }}
     >
       <HeaderBar />
@@ -133,29 +155,54 @@ export function Homepage(props: { userData: userDataType }) {
         component="div"
         sx={{ flexDirection: "column", display: "flex", flex: 1 }}
       >
-        <Sidebar width={300} chatBoxHeight={200} />
         <Box
           sx={{
             display: "flex",
-            paddingBottom: "100%",
             flexDirection: "column",
+            width: homepageWidth,
           }}
+          component="div"
         >
-          {!initializing
-            ? categories.map(
-                (category, index) =>
-                  index < lastCategory + 3 && (
-                    <DaoList
-                      moreDaos={() => moreDaos(index)}
-                      daos={daos[index]}
-                      title={category.label}
-                      key={index}
-                    />
-                  )
-              )
-            : null}
+          {!initializing ? (
+            <InfiniteScroll
+              dataLength={lastCategory + 4} //This is important field to render the next data
+              next={() => setLastCategory(lastCategory + 4)}
+              hasMore={true}
+              loader={<h4>Loading...</h4>}
+              endMessage={
+                <p style={{ textAlign: "center" }}>
+                  <b>Yay! You have seen it all</b>
+                </p>
+              }
+              // below props only if you need pull down functionality
+            >
+              {categories
+                .slice(undefined, lastCategory + 5)
+                .map((category, index) => (
+                  <DaoList
+                    moreDaos={() => moreDaos(index)}
+                    daos={daos[index]}
+                    title={category.label}
+                    key={index}
+                    refreshDone={() => setRefreshing(false)}
+                  />
+                ))}
+            </InfiniteScroll>
+          ) : null}
         </Box>
+        <Sidebar width={300} chatBoxHeight={200} />
       </Box>
     </Box>
   );
 }
+/*? categories.map((category, index) =>
+                index <= lastCategory + 4 ? (
+                  <DaoList
+                    moreDaos={() => moreDaos(index)}
+                    daos={daos[index]}
+                    title={category.label}
+                    key={index}
+                    refreshDone={() => setRefreshing(false)}
+                  />
+                ) : null
+              )*/

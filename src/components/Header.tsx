@@ -21,6 +21,7 @@ import { userMenuItems } from "../util/types";
 import React, { Fragment, ReactNode, useState } from "react";
 import { SearchBar, SearchIconWrapper } from "./SearchBar";
 import { useRouter } from "next/router";
+import { useMoralis } from "react-moralis";
 
 // To-do
 //Add menu on the header bar
@@ -46,7 +47,7 @@ export function HeaderBar(props: {
     setAnchorElUser(null);
   };
   const router = useRouter();
-  
+
   return (
     <Box sx={{ flexgrow: 1 }}>
       <AppBar
@@ -67,34 +68,38 @@ export function HeaderBar(props: {
             className={styles.logo}
           />
           <Grid item sx={{ display: "flex", flexBasis: "500px" }}>
-          <Button sx={{ minWidth: 0, flexGrow: 1 }} onClick={() => router.push("/search")}>
-            <SearchBar
-              sx={{
-                border: 2,
-                borderRadius: 5,
-                borderColor: "primary.main",
-                flexGrow: 1,
-              }}
+            <Button
+              sx={{ minWidth: 0, flexGrow: 1 }}
+              onClick={() => router.push("/search")}
             >
-              <SearchIconWrapper
+              <SearchBar
                 sx={{
-                  height: "100%",
-                  position: "absolute",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "primary.main",
+                  border: 2,
+                  borderRadius: 5,
+                  borderColor: "primary.main",
+                  flexGrow: 1,
                 }}
               >
-                <SearchIcon />
-              </SearchIconWrapper>
-              <InputBase
-                fullWidth
-                placeholder="Discover DAO on The Forum"
-                inputProps={{ "aria-label": "search" }}
-                sx={{ paddingLeft: 6 }}
-                inputMode="search"/>
-            </SearchBar>
-          </Button>
+                <SearchIconWrapper
+                  sx={{
+                    height: "100%",
+                    position: "absolute",
+                    display: "flex",
+                    alignItems: "center",
+                    color: "primary.main",
+                  }}
+                >
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <InputBase
+                  fullWidth
+                  placeholder="Discover DAO on The Forum"
+                  inputProps={{ "aria-label": "search" }}
+                  sx={{ paddingLeft: 6 }}
+                  inputMode="search"
+                />
+              </SearchBar>
+            </Button>
           </Grid>
           <Grid item sx={{ display: "flex", width: "400px", columnGap: 2 }}>
             <Button variant="contained" sx={{ minWidth: 0, flexGrow: 1 }}>
