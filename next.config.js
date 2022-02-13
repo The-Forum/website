@@ -4,6 +4,9 @@ const nextConfig = {
   images: {
     domains: ["assets.coingecko.com"],
   },
+  experimental: {
+    scrollRestoration: true,
+  },
 };
 const withTM = require("next-transpile-modules")(["react-chatbox-component"]);
 

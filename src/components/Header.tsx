@@ -34,7 +34,7 @@ export function HeaderBar(props: {
   topLeft?: () => ReactNode;
   userId?: string;
 }) {
-  const { authenticate } = useMoralis();
+  const { authenticate, Moralis } = useMoralis();
   //Initializes user state hook
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -134,8 +134,17 @@ export function HeaderBar(props: {
                   onClose={handleCloseUserMenu}
                 >
                   {userMenuItems.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
+                    <MenuItem key={setting.text} onClick={handleCloseUserMenu}>
+                      <Typography
+                        textAlign="center"
+                        onClick={() =>
+                          Moralis.User.logOut().then(() =>
+                            console.log("loggggg")
+                          )
+                        }
+                      >
+                        {setting.text}
+                      </Typography>
                     </MenuItem>
                   ))}
                 </Menu>

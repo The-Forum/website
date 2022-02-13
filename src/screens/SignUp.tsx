@@ -86,6 +86,7 @@ export const SignUp = () => {
         {preferences.map((preference: preference, index) => {
           return (
             <Preference
+              key={index}
               text={preference}
               x={textCoords[index].x}
               y={textCoords[index].y}

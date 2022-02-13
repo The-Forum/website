@@ -6,24 +6,26 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { HeaderBar } from "../../../components/Header";
-import { Sidebar } from "../../../components/Sidebar";
-import { firestore } from "../../../util/firebaseConnection";
-import { dao, UserDataContext, userDataType } from "../../../util/types";
-import styles from "../../../styles/Home.module.css";
+import { HeaderBar } from "../components/Header";
+import { Sidebar } from "../components/Sidebar";
+import { firestore } from "../util/firebaseConnection";
+import { dao, UserDataContext, userDataType } from "../util/types";
+import styles from "../styles/Home.module.css";
 import Iframe from "react-iframe";
 import { style } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
+import { useWindowDimensions } from "../components/Hooks";
 const Daodetail = (props: { userData: userDataType }) => {
   const router = useRouter();
+  const { width, height } = useWindowDimensions;
   const { daoid } = router.query;
   const [dao, setDao] = useState({} as dao);
   const [initializing, setInitializing] = useState(true);
+  const [disableJoin, setDisableJoin] = useState(false);
   const { user } = useMoralis();
-  console.log("user");
-  console.log(user && user!.attributes);
+  console.log("user", user && user!.attributes);
   const [daoJoined, setDaoJoined] = useState(
     props.userData &&
       dao &&
@@ -31,6 +33,7 @@ const Daodetail = (props: { userData: userDataType }) => {
       props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
   );
   async function toggleDAOjoined() {
+    setDisableJoin(true);
     setDaoJoined(!daoJoined);
     await runTransaction(firestore, async (transaction) => {
       const docRef = doc(
@@ -50,12 +53,19 @@ const Daodetail = (props: { userData: userDataType }) => {
           : [dao.id];
       else joinedDAOlist = snapshot.joinedDAOs.filter((tmp) => tmp != dao.id);
       transaction.update(docRef, { joinedDAOs: joinedDAOlist });
+      setDisableJoin(false);
     });
   }
   function onDAOUpdate(doc: DocumentSnapshot) {
     const thisDAO = doc.data()! as dao;
     setDao(thisDAO);
     setInitializing(false);
+    setDaoJoined(
+      props.userData &&
+        dao &&
+        props.userData.joinedDAOs &&
+        props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
+    );
     console.log(props.userData?.joinedDAOs);
   }
   useEffect(() => {
@@ -63,8 +73,7 @@ const Daodetail = (props: { userData: userDataType }) => {
     console.log(daoid);
     if (daoid) return onSnapshot(doc(firestore, "daos", daoid!), onDAOUpdate);
   }, [daoid]);
-  console.log("userdata");
-  console.log(props.userData);
+  console.log("userdata", props.userData);
   if (!initializing) {
     return (
       <Box
@@ -91,17 +100,18 @@ const Daodetail = (props: { userData: userDataType }) => {
                   }}
                 >
                   <h3 color="black">{!initializing && dao.name}</h3>
-                  <IconButton href={"/"}>
+                  {/*<IconButton href={"/"}>
                     <CloseIcon />
-                  </IconButton>
+                  </IconButton>*/}
                 </Box>
                 {props.userData &&
-                  props.userData.joinedDAOs &&
+                  props.userData.id &&
                   (!daoJoined ? (
                     <Button
                       variant="contained"
                       sx={{ width: 180, margin: 1 }}
                       onClick={toggleDAOjoined}
+                      disabled={disableJoin}
                     >
                       Join DAO
                     </Button>
@@ -110,6 +120,7 @@ const Daodetail = (props: { userData: userDataType }) => {
                       variant="outlined"
                       sx={{ width: 180, margin: 1 }}
                       onClick={toggleDAOjoined}
+                      disabled={disableJoin}
                     >
                       Leave DAO
                     </Button>
@@ -148,22 +159,12 @@ const Content = (dao: dao) => {
           backgroundImage:
             "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")",
           width: "100%",
-          flex: 1,
-          display: "flex",
         }}
       >
-        {/*
-        <Iframe
-          url="https://shinedao.finance/"
-          className={styles.frame}
-          frameBorder={0}
-        />
-        */}
         <Box
           sx={{
             display: "flex",
-            marginBottom: 0,
-            marginTop: "30vh",
+            marginTop: 15,
             minHeight: "70vh",
             flexDirection: "column",
             position: "relative",
@@ -180,7 +181,7 @@ const Content = (dao: dao) => {
               sx={{ display: "flex" }}
             >
               <Box sx={{ flex: 1, display: "flex", margin: 1 }}>
-                {dao.description}
+                <div dangerouslySetInnerHTML={{ __html: dao.description }} />
               </Box>
             </Grid>
             <Grid item xs={0} sm={2} md={3} />
@@ -188,28 +189,40 @@ const Content = (dao: dao) => {
           <Grid container>
             <Grid item xs={0} sm={2} md={3} />
             <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={"https://twitter.com/" + dao.links.twitter_screen_name}
-                target="_blank"
-              >
-                Twitter
-              </Button>
+              {dao.links.twitter_screen_name && (
+                <Button
+                  variant="contained"
+                  sx={{ flex: 1, display: "flex", margin: 1 }}
+                  href={"https://twitter.com/" + dao.links.twitter_screen_name}
+                  target="_blank"
+                >
+                  Twitter
+                </Button>
+              )}
             </Grid>
             <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={dao.links.chat_url[0]}
-                target="_blank"
-              >
-                Discord
-              </Button>
+              {dao.links.chat_url[0] && (
+                <Button
+                  variant="contained"
+                  sx={{ flex: 1, display: "flex", margin: 1 }}
+                  href={dao.links.chat_url[0]}
+                  target="_blank"
+                >
+                  Discord
+                </Button>
+              )}
             </Grid>
             <Grid item xs={0} sm={2} md={3} />
           </Grid>
         </Box>
+        {/*<Iframe
+          url="https://shinedao.finance/"
+          className={styles.frame}
+          frameBorder={0}
+          width="100%"
+          overflow="hidden"
+          height="100%"
+        />*/}
       </Box>
     );
   } else {

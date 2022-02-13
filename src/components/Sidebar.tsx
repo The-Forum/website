@@ -19,7 +19,7 @@ export const Sidebar = (props: { width: number; chatBoxHeight: number }) => {
         },
       }}*/
       sx={{
-        width: 600,
+        width: 300,
         height: "100%",
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: { width: width, boxSizing: "border-box" },

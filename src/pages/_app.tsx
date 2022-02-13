@@ -19,10 +19,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       console.log("you shouldnt see this too often!!")
       console.log(user&&user.attributes)
       if (user&&user.attributes&&user.attributes.ethAddress&&isAuthenticated) {
+        console.log("dreii",user.attributes.ethAddress)
         return onSnapshot(doc(getFirestore(firebaseApp), "users", user.attributes.ethAddress), (doc) => {
-          
-          console.log("hi")
-          console.log(doc.data())
+          console.log("drei",console.log(doc.data()))
           setUserData({ ...doc.data(), id: user!.attributes.ethAddress } as userDataType | undefined)
           setLoadingUserData(false)
         })
@@ -30,14 +29,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         setUserData(undefined)
         setLoadingUserData(false)
       }
-    }, [isAuthenticated])
-    useEffect(()=>{
+    }, [isAuthenticated,user])
+    /*useEffect(()=>{
       const event=Moralis.onWeb3Deactivated((result) => {
+        console.log("logout!!")
         Moralis.User.logOut()
       });
-    },[])
-    console.log("pageprops")
-    console.log(Component)
+    },[])*/
+    console.log("authii",isAuthenticated)
+    console.log("authii",user)
+    console.log("authii",user?.attributes)
+    console.log("authii",user&&Moralis.User.current())
     if (!loadingUserData)
       return (
           <Component {...pageProps} userData={userData}/>

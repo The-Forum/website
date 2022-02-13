@@ -30,7 +30,7 @@ export const Chat = () => {
       }
     );
   }, []);
-  if (user.attributes.ethAddress)
+  if (user && user.attributes.ethAddress)
     return (
       <div className={styles.chat}>
         Placeholder

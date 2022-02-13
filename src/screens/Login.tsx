@@ -4,7 +4,7 @@ import { useMoralis } from "react-moralis";
 import styles from "../styles/Home.module.css";
 
 export const Login = () => {
-  const { authenticate, user } = useMoralis();
+  const { authenticate, user, Moralis } = useMoralis();
   console.log("moin");
   console.log(user);
   const theme = useTheme();
@@ -28,7 +28,9 @@ export const Login = () => {
         className={styles.logo}
       />
       <Button
-        onClick={() => authenticate()}
+        onClick={() => {
+          authenticate().then((d) => Moralis.enableWeb3());
+        }}
         variant="contained"
         className={styles.walletButton}
       >

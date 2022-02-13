@@ -24,7 +24,20 @@ export const preferences = [
   "Blockchain",
   "Web3.0",
 ];
-export const userMenuItems = ["Profile", "Account", "Logout"];
+export const userMenuItems = [
+  {
+    text: "Profile",
+    action: (_user: Moralis.UserConstructor) => {
+      console.log("Profile");
+    },
+  },
+  {
+    text: "Logout",
+    action: (user: Moralis.UserConstructor) => {
+      user.logOut().then(() => console.log("loggedouts"));
+    },
+  },
+];
 export type topic = typeof preferences[number];
 export interface userDataType {
   preferences?: {

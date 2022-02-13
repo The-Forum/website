@@ -150,7 +150,7 @@ export function Homepage(props: { userData: userDataType }) {
         scrollBehavior: "smooth",
       }}
     >
-      <HeaderBar />
+      <HeaderBar userId={props.userData && props.userData.id} />
       <Box
         component="div"
         sx={{ flexDirection: "column", display: "flex", flex: 1 }}
