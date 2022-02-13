@@ -133,11 +133,7 @@ export function HeaderBar(props: {
                     <MenuItem key={setting.text} onClick={handleCloseUserMenu}>
                       <Typography
                         textAlign="center"
-                        onClick={() =>
-                          Moralis.User.logOut().then(() =>
-                            console.log("loggggg")
-                          )
-                        }
+                        onClick={() => setting.action(router, Moralis.User)}
                       >
                         {setting.text}
                       </Typography>

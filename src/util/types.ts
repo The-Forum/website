@@ -1,4 +1,5 @@
 import Moralis from "moralis/types";
+import { NextRouter } from "next/router";
 import { createContext } from "react";
 
 export const preferences = [
@@ -27,14 +28,14 @@ export const preferences = [
 export const userMenuItems = [
   {
     text: "Profile",
-    action: (_user: Moralis.UserConstructor) => {
+    action: (_router: NextRouter, _user: Moralis.UserConstructor) => {
       console.log("Profile");
     },
   },
   {
     text: "Logout",
-    action: (user: Moralis.UserConstructor) => {
-      user.logOut().then(() => console.log("loggedouts"));
+    action: (router: NextRouter, user: Moralis.UserConstructor) => {
+      user.logOut().then(() => router.push("/"));
     },
   },
 ];

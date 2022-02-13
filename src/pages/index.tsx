@@ -15,15 +15,17 @@ import { useTheme } from '@mui/material'
 import { Chat } from '../components/ChatBox'
 
 
-const Home: NextPage = (props:{userData:userDataType}) => {
+const Home = (props:{userData:userDataType,loadUserData:boolean}) => {
   const { Moralis,user} = useMoralis()
   console.log("user",user&&user.attributes.ethAddress)
   return (
     user&&user.attributes.ethAddress ?
+    !props.loadUserData?
       props.userData && props.userData.preferences ?
         <Homepage userData={props.userData} />
         :
         <SignUp />
+        : null
       :
       <Login />
   )

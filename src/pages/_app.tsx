@@ -10,10 +10,12 @@ import { UserDataContext, userDataType } from '../util/types'
 import styles from "../styles/Home.module.css"
 import { ThemeProvider, useTheme } from '@mui/material'
 import { EgldSendTransaction } from '@tatumio/tatum'
+import { SettingsInputAntennaTwoTone } from '@mui/icons-material'
 function MyApp({ Component, pageProps }: AppProps) {
   const ScreenSwitch = () => {
     const [userData, setUserData] = useState({} as userDataType | undefined)
     const [loadingUserData, setLoadingUserData] = useState(true)
+    const [init,setInit]=useState(true)
     const { Moralis,isAuthenticated,user } = useMoralis()
     useEffect(() => {
       console.log("you shouldnt see this too often!!")
@@ -25,11 +27,15 @@ function MyApp({ Component, pageProps }: AppProps) {
           setUserData({ ...doc.data(), id: user!.attributes.ethAddress } as userDataType | undefined)
           setLoadingUserData(false)
         })
-      } else {
+      } else if(user) {
         setUserData(undefined)
-        setLoadingUserData(false)
       }
-    }, [isAuthenticated,user])
+      setInit(false)
+    }, [isAuthenticated,user,Moralis])
+    useEffect(()=>{
+      if(Moralis)
+      setInit(false)
+    },[Moralis])
     /*useEffect(()=>{
       const event=Moralis.onWeb3Deactivated((result) => {
         console.log("logout!!")
@@ -40,9 +46,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     console.log("authii",user)
     console.log("authii",user?.attributes)
     console.log("authii",user&&Moralis.User.current())
-    if (!loadingUserData)
+    console.log("loaduser",loadingUserData)
+    console.log("init",init)
+    if(!init)
       return (
-          <Component {...pageProps} userData={userData}/>
+          <Component {...pageProps} userData={userData} loadUserData={loadingUserData}/>
       )
     else return null
   }
