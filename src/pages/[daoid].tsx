@@ -19,7 +19,6 @@ import { useMoralis } from "react-moralis";
 import { useWindowDimensions } from "../components/Hooks";
 const Daodetail = (props: { userData: userDataType }) => {
   const router = useRouter();
-  const { width, height } = useWindowDimensions;
   const { daoid } = router.query;
   const [dao, setDao] = useState({} as dao);
   const [initializing, setInitializing] = useState(true);
@@ -27,6 +26,13 @@ const Daodetail = (props: { userData: userDataType }) => {
   const { user } = useMoralis();
   console.log("user", user && user!.attributes);
   const [daoJoined, setDaoJoined] = useState(
+    props.userData &&
+      dao &&
+      props.userData.joinedDAOs &&
+      props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
+  );
+  console.log(
+    "wass this",
     props.userData &&
       dao &&
       props.userData.joinedDAOs &&
@@ -53,8 +59,8 @@ const Daodetail = (props: { userData: userDataType }) => {
           : [dao.id];
       else joinedDAOlist = snapshot.joinedDAOs.filter((tmp) => tmp != dao.id);
       transaction.update(docRef, { joinedDAOs: joinedDAOlist });
-      setDisableJoin(false);
     });
+    setDisableJoin(false);
   }
   function onDAOUpdate(doc: DocumentSnapshot) {
     const thisDAO = doc.data()! as dao;
@@ -62,9 +68,9 @@ const Daodetail = (props: { userData: userDataType }) => {
     setInitializing(false);
     setDaoJoined(
       props.userData &&
-        dao &&
+        thisDAO &&
         props.userData.joinedDAOs &&
-        props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
+        props.userData.joinedDAOs.findIndex((tmp) => tmp == thisDAO.id) > -1
     );
     console.log(props.userData?.joinedDAOs);
   }
@@ -89,17 +95,17 @@ const Daodetail = (props: { userData: userDataType }) => {
           userId={props.userData && props.userData.id}
           topLeft={() =>
             dao && (
-              <Box sx={{ backgroundColor: "secondary.main", width: 200 }}>
+              <Box sx={{ backgroundColor: "secondary.main", width: 250 }}>
                 <Box
                   sx={{
                     paddingLeft: 1,
-                    paddingBottom: 0.25,
+                    paddingBottom: 0,
                     flexDirection: "row",
                     display: "flex",
                     justifyContent: "center",
                   }}
                 >
-                  <h3 color="black">{!initializing && dao.name}</h3>
+                  <h2 color="black">{!initializing && dao.name}</h2>
                   {/*<IconButton href={"/"}>
                     <CloseIcon />
                   </IconButton>*/}
@@ -109,7 +115,7 @@ const Daodetail = (props: { userData: userDataType }) => {
                   (!daoJoined ? (
                     <Button
                       variant="contained"
-                      sx={{ width: 180, margin: 1 }}
+                      sx={{ width: 230, margin: 1 }}
                       onClick={toggleDAOjoined}
                       disabled={disableJoin}
                     >
@@ -118,7 +124,7 @@ const Daodetail = (props: { userData: userDataType }) => {
                   ) : (
                     <Button
                       variant="outlined"
-                      sx={{ width: 180, margin: 1 }}
+                      sx={{ width: 230, margin: 1 }}
                       onClick={toggleDAOjoined}
                       disabled={disableJoin}
                     >
@@ -140,7 +146,6 @@ const Daodetail = (props: { userData: userDataType }) => {
           }}
         >
           {!initializing && Content(dao)}
-          <Sidebar width={300} chatBoxHeight={200} />
         </Box>
       </Box>
     );
@@ -158,7 +163,9 @@ const Content = (dao: dao) => {
           loading: "lazy",
           backgroundImage:
             "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")",
+          backgroundSize: "cover",
           width: "100%",
+          backgroundPosition: "center",
         }}
       >
         <Box
@@ -189,28 +196,56 @@ const Content = (dao: dao) => {
           <Grid container>
             <Grid item xs={0} sm={2} md={3} />
             <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              {dao.links.twitter_screen_name && (
-                <Button
-                  variant="contained"
-                  sx={{ flex: 1, display: "flex", margin: 1 }}
-                  href={"https://twitter.com/" + dao.links.twitter_screen_name}
-                  target="_blank"
-                >
-                  Twitter
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                sx={{ flex: 1, display: "flex", margin: 1 }}
+                href={dao.links.blockchain_site[0]}
+                target="_blank"
+                disabled={
+                  !dao.links.blockchain_site[0] ||
+                  dao.links.blockchain_site[0] == ""
+                }
+              >
+                Token
+              </Button>
             </Grid>
             <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              {dao.links.chat_url[0] && (
-                <Button
-                  variant="contained"
-                  sx={{ flex: 1, display: "flex", margin: 1 }}
-                  href={dao.links.chat_url[0]}
-                  target="_blank"
-                >
-                  Discord
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                sx={{ flex: 1, display: "flex", margin: 1 }}
+                href={dao.links.homepage[0]}
+                target="_blank"
+                disabled={!dao.links.homepage[0] || dao.links.homepage[0] == ""}
+              >
+                Website
+              </Button>
+            </Grid>
+            <Grid item xs={0} sm={2} md={3} />
+            <Grid item xs={0} sm={2} md={3} />
+            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
+              <Button
+                variant="contained"
+                sx={{ flex: 1, display: "flex", margin: 1 }}
+                href={"https://twitter.com/" + dao.links.twitter_screen_name}
+                target="_blank"
+                disabled={
+                  !dao.links.twitter_screen_name ||
+                  dao.links.twitter_screen_name == ""
+                }
+              >
+                Twitter
+              </Button>
+            </Grid>
+            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
+              <Button
+                variant="contained"
+                sx={{ flex: 1, display: "flex", margin: 1 }}
+                href={dao.links.chat_url[0] || "a"}
+                target="_blank"
+                disabled={!dao.links.chat_url[0] || dao.links.chat_url[0] == ""}
+              >
+                Discord
+              </Button>
             </Grid>
             <Grid item xs={0} sm={2} md={3} />
           </Grid>

@@ -66,6 +66,7 @@ export interface dao {
   image: string;
   links: {
     chat_url: string[];
+    blockchain_site: string[];
     homepage: string[];
     repos_url: {
       github: string[];

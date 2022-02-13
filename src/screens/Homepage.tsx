@@ -7,12 +7,14 @@ import {
   collection,
   doc,
   DocumentData,
+  documentId,
   getDoc,
   getDocs,
   limit,
   orderBy,
   query,
   QueryDocumentSnapshot,
+  QuerySnapshot,
   startAfter,
   startAt,
   where,
@@ -25,11 +27,11 @@ import _ from "lodash";
 import InfiniteScroll from "react-infinite-scroll-component";
 export function Homepage(props: { userData: userDataType }) {
   const { width, height } = useWindowDimensions();
-  const homepageWidth = width - 300 - 16;
+  const homepageWidth = width - 16;
   const [lastCategory, setLastCategory] = useState(-10 as number);
   const [categories, setCategories] = useState(
     [] as {
-      categories: string[];
+      categories?: string[];
       label: string;
     }[]
   );
@@ -44,7 +46,10 @@ export function Homepage(props: { userData: userDataType }) {
       const daoCategories = doc.data() as { [key: string]: string[] };
       if (!doc.data())
         throw ReferenceError("Can't find DAO categories look up table");
-      const tmpCategories = [] as { categories: string[]; label: string }[];
+      const tmpCategories = [] as { categories?: string[]; label: string }[];
+      if (props.userData.joinedDAOs && props.userData.joinedDAOs.length > 0) {
+        tmpCategories.push({ label: "Your DAOs" });
+      }
       const sortedPrefs =
         props.userData &&
         props.userData.preferences &&
@@ -68,7 +73,7 @@ export function Homepage(props: { userData: userDataType }) {
   }, [categories, lastCategory]); //empty dependecies --> executed once
   async function firstDaos(
     categories: {
-      categories: string[];
+      categories?: string[];
       label: string;
     }[],
     lastCategory: number
@@ -76,21 +81,37 @@ export function Homepage(props: { userData: userDataType }) {
     const tmp = daos
       ? daos
       : (new Array(categories.length).fill([{}]) as dao[][]);
-    const lastDao = new Array(categories.length).fill(
-      {}
-    ) as QueryDocumentSnapshot<DocumentData>[];
-    console.log("start");
+    const tmpLastDao = lastDao
+      ? lastDao
+      : (new Array(categories.length).fill({}) as QueryDocumentSnapshot<
+          DocumentData
+        >[]);
+    console.log("1start");
     await Promise.all(
       categories.map(async (category, index) => {
         if (index > lastCategory && index <= lastCategory + 4) {
-          const querySnapshot = await getDocs(
-            query(
-              collection(firestore, "daos"),
-              where("categories", "array-contains-any", category.categories),
-              orderBy("followersCount", "desc"),
-              limit(10)
-            )
-          );
+          console.log("1index", index);
+          let querySnapshot: QuerySnapshot<DocumentData>;
+          if (category.categories)
+            querySnapshot = await getDocs(
+              query(
+                collection(firestore, "daos"),
+                where("categories", "array-contains-any", category.categories),
+                orderBy("followersCount", "desc"),
+                limit(10)
+              )
+            );
+          else
+            querySnapshot = await getDocs(
+              query(
+                collection(firestore, "daos"),
+                where(
+                  documentId(),
+                  "in",
+                  props.userData.joinedDAOs?.sort().slice(0, 10)
+                )
+              )
+            );
           console.log("index", index);
           const listDao = [] as dao[];
           querySnapshot.forEach((daoItem) => {
@@ -98,44 +119,78 @@ export function Homepage(props: { userData: userDataType }) {
           });
           console.log("liiist", listDao);
           if (listDao && listDao.length > 0) {
-            lastDao[index] = querySnapshot.docs.at(-1)!;
+            tmpLastDao[index] = querySnapshot.docs.at(-1)!;
+            //console.log("mmh one last dao", lastDao[index]);
             tmp[index] = listDao;
           }
         }
       })
     );
-    console.log("end");
+    console.log("1end");
     if (tmp != []) {
+      console.log("mmhLastDao", tmpLastDao);
+      console.log("mmhLastDao", tmp);
       setDaos(tmp.slice());
-      setLastDao(lastDao.slice());
+      setLastDao(tmpLastDao.slice());
     }
     setInitializing(false);
   }
-  function moreDaos(categoryIndex: number) {
+  async function moreDaos(categoryIndex: number) {
+    console.log("mmh", lastDao[categoryIndex]);
     if (!refreshing) {
-      getDocs(
-        query(
-          collection(firestore, "daos"),
-          where(
-            "categories",
-            "array-contains-any",
-            categories[categoryIndex].categories
-          ),
-          limit(10),
-          orderBy("followersCount", "desc"),
-          startAfter(lastDao[categoryIndex])
+      let querySnapshot = [] as QuerySnapshot<DocumentData>;
+      if (categories[categoryIndex].categories)
+        querySnapshot = await getDocs(
+          query(
+            collection(firestore, "daos"),
+            where(
+              "categories",
+              "array-contains-any",
+              categories[categoryIndex].categories
+            ),
+            limit(10),
+            orderBy("followersCount", "desc"),
+            startAfter(lastDao[categoryIndex])
+          )
+        );
+      else {
+        const lastIndex = props.userData.joinedDAOs!.findIndex(
+          (joinedDao) => joinedDao == lastDao[categoryIndex].data().id
+        );
+        console.log(
+          "lastIndex",
+          props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
+        );
+        if (
+          props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
+            .length &&
+          props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
+            .length > 0
         )
-      ).then((querySnapshot) => {
-        const listDao = daos;
-        querySnapshot.forEach((daoItem) => {
-          listDao[categoryIndex].push(daoItem.data() as dao);
-        });
-        console.log("more", listDao);
-        if (querySnapshot.docs && querySnapshot.docs.length > 0) {
-          setDaos(listDao.slice());
-          lastDao[categoryIndex] = querySnapshot.docs.at(-1)!;
-        }
+          querySnapshot = await getDocs(
+            query(
+              collection(firestore, "daos"),
+              where(
+                documentId(),
+                "in",
+                props.userData.joinedDAOs
+                  ?.sort()
+                  .slice(lastIndex + 1, lastIndex + 11)
+              )
+            )
+          );
+      }
+      const listDao = daos;
+      const tmpLastDao = lastDao;
+      querySnapshot.forEach((daoItem) => {
+        listDao[categoryIndex].push(daoItem.data() as dao);
       });
+      console.log("more", listDao);
+      if (querySnapshot.docs && querySnapshot.docs.length > 0) {
+        setDaos(listDao.slice());
+        tmpLastDao[categoryIndex] = querySnapshot.docs.at(-1)!;
+        setLastDao(tmpLastDao);
+      }
       setRefreshing(true);
     }
   }
@@ -190,7 +245,7 @@ export function Homepage(props: { userData: userDataType }) {
             </InfiniteScroll>
           ) : null}
         </Box>
-        <Sidebar width={300} chatBoxHeight={200} />
+        {/*<Sidebar width={300} chatBoxHeight={200} />*/}
       </Box>
     </Box>
   );

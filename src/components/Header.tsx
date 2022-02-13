@@ -101,14 +101,10 @@ export function HeaderBar(props: {
               </SearchBar>
             </Button>
           </Grid>
-          <Grid item sx={{ display: "flex", width: "400px", columnGap: 2 }}>
-            <Button variant="contained" sx={{ minWidth: 0, flexGrow: 1 }}>
-              Add DAO
-            </Button>
-            <Button variant="contained" sx={{ minWidth: 0, flexGrow: 1 }}>
-              My List
-            </Button>
-          </Grid>
+          <Grid
+            item
+            sx={{ display: "flex", width: "400px", columnGap: 2 }}
+          ></Grid>
           <Grid item sx={{ display: "flex", flexShrink: 0 }}>
             {props.userId ? (
               <Fragment>
