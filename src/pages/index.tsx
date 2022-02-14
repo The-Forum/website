@@ -11,10 +11,13 @@ import { theme } from '../styles/theme'
 import { firebaseApp } from '../util/firebaseConnection'
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";
 import { UserDataContext, userDataType } from '../util/types'
-import { useTheme } from '@mui/material'
+import { Autocomplete, InputBase, TextField, useTheme } from '@mui/material'
 import { Chat } from '../components/ChatBox'
+import { HeaderBar } from '../components/Header'
+import { SearchBar, SearchIconWrapper } from '../components/SearchBar'
 
-
+import SearchIcon from "@mui/icons-material/Search";
+import { Search } from '@mui/icons-material'
 const Home = (props:{userData:userDataType,loadUserData:boolean}) => {
   const { Moralis,user} = useMoralis()
   console.log("user",user&&user.attributes.ethAddress)

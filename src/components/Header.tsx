@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -8,20 +9,33 @@ import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
+  InputAdornment,
   InputBase,
   Link,
   Menu,
   MenuItem,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
-import { userMenuItems } from "../util/types";
-import React, { Fragment, ReactNode, useState } from "react";
+import { dao, userMenuItems } from "../util/types";
+import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import { SearchBar, SearchIconWrapper } from "./SearchBar";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
+import {
+  collection,
+  endAt,
+  getDocs,
+  orderBy,
+  query,
+  startAt,
+  where,
+} from "firebase/firestore";
+import { firestore } from "../util/firebaseConnection";
+import { InputUnstyled } from "@mui/base";
 
 // To-do
 //Add menu on the header bar
@@ -34,10 +48,12 @@ export function HeaderBar(props: {
   topLeft?: () => ReactNode;
   userId?: string;
 }) {
+  let refInput = useRef(null);
   const { authenticate, Moralis } = useMoralis();
   //Initializes user state hook
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-
+  const [searchText, setSearchText] = useState("");
+  const [results, setResults] = useState([] as dao[]);
   //Handler to open user menu. References the current item on the user menu
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -46,6 +62,27 @@ export function HeaderBar(props: {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  useEffect(() => {
+    async function getSearchResults() {
+      const querySnapshot = await getDocs(
+        query(
+          collection(firestore, "daos"),
+          orderBy("name"),
+          startAt(searchText),
+          endAt(searchText + "~")
+        )
+      );
+      const listDao = [] as dao[];
+      querySnapshot.forEach((daoItem) => {
+        listDao.push(daoItem.data() as dao);
+      });
+      console.log("hereeee", listDao);
+      setResults(listDao);
+    }
+    if (searchText.length == 2) {
+      getSearchResults();
+    }
+  }, [searchText]);
   const router = useRouter();
 
   return (
@@ -67,39 +104,80 @@ export function HeaderBar(props: {
             loading="lazy"
             className={styles.logo}
           />
-          <Grid item sx={{ display: "flex", flexBasis: "500px" }}>
-            <Button
-              sx={{ minWidth: 0, flexGrow: 1 }}
-              onClick={() => router.push("/search")}
+          <Grid item sx={{ display: "flex", width: 1000 }}>
+            {/* <SearchBar
+              sx={{
+                border: 2,
+                borderRadius: 5,
+                borderColor: "primary.main",
+                flexGrow: 1,
+              }}
             >
-              <SearchBar
-                sx={{
-                  border: 2,
-                  borderRadius: 5,
-                  borderColor: "primary.main",
-                  flexGrow: 1,
-                }}
-              >
-                <SearchIconWrapper
-                  sx={{
-                    height: "100%",
-                    position: "absolute",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "primary.main",
-                  }}
-                >
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <InputBase
-                  fullWidth
+            <SearchIconWrapper
+              sx={{
+                height: "100%",
+                position: "absolute",
+                display: "flex",
+                alignItems: "center",
+                color: "primary.main",
+              }}
+            >
+              {" "}
+              
+            </SearchIconWrapper>*/}
+            <Autocomplete
+              options={results}
+              onChange={(event, dao) => router.push("[daoid]", (dao as dao).id)}
+              loading={results.length == 0}
+              sx={{ paddingLeft: 6, border: 0, flex: 1, display: "flex" }}
+              onBlur={() => setResults([])}
+              open={results.length > 0}
+              getOptionLabel={(option) => option.name}
+              /*renderOption={(_props, option) => {
+                  console.log("hereee yes");
+                  return (
+                    <Box sx={{ width: "100%", height: 20 }}>
+                      {option.image != "" && (
+                        <img
+                          src={`${option.image}`}
+                          className={styles.image}
+                          width="20"
+                          height="20"
+                          alt={option.name}
+                          loading="lazy"
+                        />
+                      )}
+                      {option.name}
+                    </Box>
+                  );
+                }}*/
+              renderInput={(params) => (
+                <TextField
                   placeholder="Discover DAO on The Forum"
-                  inputProps={{ "aria-label": "search" }}
-                  sx={{ paddingLeft: 6 }}
+                  sx={{
+                    paddingLeft: 6,
+                    border: 0,
+                    display: "flex",
+                  }}
+                  variant="outlined"
                   inputMode="search"
+                  value={searchText}
+                  onChange={(event) => setSearchText(event.target.value)}
+                  {...params}
+                  size="small"
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: null,
+                  }}
                 />
-              </SearchBar>
-            </Button>
+              )}
+            />{" "}
+            {/*</SearchBar>*/}
           </Grid>
           <Grid
             item
