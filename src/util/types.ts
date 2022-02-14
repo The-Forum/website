@@ -19,9 +19,7 @@ export const preferences = [
 export const userMenuItems = [
   {
     text: "Profile",
-    action: (_router: NextRouter, _user: Moralis.UserConstructor) => {
-      console.log("Profile");
-    },
+    action: (_router: NextRouter, _user: Moralis.UserConstructor) => {},
   },
   {
     text: "Logout",

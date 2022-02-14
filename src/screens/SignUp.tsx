@@ -80,6 +80,7 @@ export const SignUp = () => {
           onClick={setPreferences}
           variant="contained"
           className={styles.walletButton}
+          sx={{ marginTop: 1 }}
         >
           Confirm your preferences
         </Button>
@@ -99,7 +100,6 @@ export const SignUp = () => {
                     y: coords.y - textCoords[index].y,
                   });
                 } else {
-                  console.log("up");
                   setDraggedPref(-1);
                 }
               }}

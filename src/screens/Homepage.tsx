@@ -86,11 +86,10 @@ export function Homepage(props: { userData: userDataType }) {
       : (new Array(categories.length).fill({}) as QueryDocumentSnapshot<
           DocumentData
         >[]);
-    console.log("1start");
+
     await Promise.all(
       categories.map(async (category, index) => {
         if (index > lastCategory && index <= lastCategory + 4) {
-          console.log("1index", index);
           let querySnapshot: QuerySnapshot<DocumentData> | never[];
           if (category.categories)
             querySnapshot = await getDocs(
@@ -116,33 +115,30 @@ export function Homepage(props: { userData: userDataType }) {
               )
             );
           else querySnapshot = [];
-          console.log("index", index);
+
           const listDao = [] as dao[];
           querySnapshot.forEach((daoItem) => {
             listDao.push(daoItem.data() as dao);
           });
-          console.log("liiist", listDao);
+
           if (listDao && listDao.length > 0) {
             tmpLastDao[index] = (querySnapshot as QuerySnapshot<
               DocumentData
             >).docs.at(-1)!;
-            //console.log("mmh one last dao", lastDao[index]);
+            //
             tmp[index] = listDao;
           }
         }
       })
     );
-    console.log("1end");
+
     if (tmp != []) {
-      console.log("mmhLastDao", tmpLastDao);
-      console.log("mmhLastDao", tmp);
       setDaos(tmp.slice());
       setLastDao(tmpLastDao.slice());
     }
     setInitializing(false);
   }
   async function moreDaos(categoryIndex: number) {
-    console.log("mmh", lastDao[categoryIndex]);
     if (!refreshing) {
       let querySnapshot: QuerySnapshot<DocumentData> | never[];
       if (categories[categoryIndex].categories)
@@ -162,10 +158,6 @@ export function Homepage(props: { userData: userDataType }) {
       else {
         const lastIndex = props.userData.joinedDAOs!.findIndex(
           (joinedDao) => joinedDao == lastDao[categoryIndex].data().id
-        );
-        console.log(
-          "lastIndex",
-          props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
         );
         if (
           props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
@@ -192,7 +184,7 @@ export function Homepage(props: { userData: userDataType }) {
       querySnapshot.forEach((daoItem) => {
         listDao[categoryIndex].push(daoItem.data() as dao);
       });
-      console.log("more", listDao);
+
       if (querySnapshot != []) {
         if (
           (querySnapshot as QuerySnapshot<DocumentData>).docs &&

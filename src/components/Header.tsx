@@ -18,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
 import { dao, userMenuItems } from "../util/types";
@@ -36,6 +37,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "../util/firebaseConnection";
 import { InputUnstyled } from "@mui/base";
+import { useWindowDimensions } from "./Hooks";
 
 // To-do
 //Add menu on the header bar
@@ -48,7 +50,10 @@ export function HeaderBar(props: {
   topLeft?: () => ReactNode;
   userId?: string;
 }) {
+  const router = useRouter();
   let refInput = useRef(null);
+  const [searchVisible, setSearchVisible] = useState(false);
+  const { width, height } = useWindowDimensions();
   const { authenticate, Moralis } = useMoralis();
   //Initializes user state hook
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -76,14 +81,13 @@ export function HeaderBar(props: {
       querySnapshot.forEach((daoItem) => {
         listDao.push(daoItem.data() as dao);
       });
-      console.log("hereeee", listDao);
+
       setResults(listDao);
     }
     if (searchText.length == 2) {
       getSearchResults();
     }
   }, [searchText]);
-  const router = useRouter();
 
   return (
     <Box sx={{ flexgrow: 1 }}>
@@ -97,13 +101,18 @@ export function HeaderBar(props: {
             justifyContent: "space-between",
             alignItems: "center",
             backgroundColor: "secondary.main",
+            minHeight: 50,
           }}
         >
-          <img
-            src="/Forum_transparentBG.gif"
-            loading="lazy"
-            className={styles.logo}
-          />
+          {(!searchVisible || width > 500) && (
+            <img
+              src="/Forum_transparentBG.gif"
+              loading="lazy"
+              className={styles.logo}
+              onClick={() => router.push("/")}
+              style={{ cursor: "pointer" }}
+            />
+          )}
           <Grid item sx={{ display: "flex", width: 1000 }}>
             {/* <SearchBar
               sx={{
@@ -129,12 +138,17 @@ export function HeaderBar(props: {
               options={results}
               onChange={(event, dao) => router.push("[daoid]", (dao as dao).id)}
               loading={results.length == 0}
-              sx={{ paddingLeft: 6, border: 0, flex: 1, display: "flex" }}
+              sx={{
+                border: 0,
+                flex: 1,
+                display: "flex",
+                zIndex: (theme) => theme.zIndex.drawer + 5,
+              }}
               onBlur={() => setResults([])}
               open={results.length > 0}
               getOptionLabel={(option) => option.name}
               /*renderOption={(_props, option) => {
-                  console.log("hereee yes");
+                  
                   return (
                     <Box sx={{ width: "100%", height: 20 }}>
                       {option.image != "" && (
@@ -152,43 +166,63 @@ export function HeaderBar(props: {
                   );
                 }}*/
               renderInput={(params) => (
-                <TextField
-                  placeholder="Discover DAO on The Forum"
-                  sx={{
-                    paddingLeft: 6,
-                    border: 0,
-                    display: "flex",
-                  }}
-                  variant="outlined"
-                  inputMode="search"
-                  value={searchText}
-                  onChange={(event) => setSearchText(event.target.value)}
-                  {...params}
-                  size="small"
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: null,
-                  }}
-                />
+                <Fragment>
+                  <TextField
+                    placeholder="Discover DAOs on The Forum"
+                    sx={{
+                      border: 0,
+                      display: !searchVisible && width <= 500 ? "none" : "flex",
+                      ...(searchVisible &&
+                        width <= 500 && {
+                          width: "80%",
+                          position: "absolute",
+                          alignSelf: "center",
+                          left: 5,
+                          top: 5,
+                        }),
+                    }}
+                    variant="outlined"
+                    inputMode="search"
+                    value={searchText}
+                    onChange={(event) => setSearchText(event.target.value)}
+                    {...params}
+                    size="small"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon onClick={() => setSearchVisible(true)} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: null,
+                    }}
+                  />
+                </Fragment>
               )}
             />{" "}
             {/*</SearchBar>*/}
           </Grid>
-          <Grid
-            item
-            sx={{ display: "flex", width: "400px", columnGap: 2 }}
-          ></Grid>
-          <Grid item sx={{ display: "flex", flexShrink: 0 }}>
+
+          <Grid item sx={{ display: "flex", flexShrink: 0, marginLeft: 2 }}>
             {props.userId ? (
               <Fragment>
+                {width > 875 && (
+                  <Box component="h5" sx={{ color: "black" }}>
+                    Welcome, {props.userId}
+                  </Box>
+                )}
+                {width <= 500 && !searchVisible && (
+                  <SearchIcon
+                    sx={{ color: "black", alignSelf: "center" }}
+                    onClick={() => setSearchVisible(true)}
+                  />
+                )}
                 <Tooltip title="Open User Menu">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar />
+                  <IconButton
+                    onClick={handleOpenUserMenu}
+                    sx={{ marginRight: 1 }}
+                  >
+                    <SettingsIcon />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -228,7 +262,7 @@ export function HeaderBar(props: {
         </Grid>
         <Box
           sx={{
-            zIndex: (theme) => theme.zIndex.drawer + 1,
+            zIndex: (theme) => theme.zIndex.drawer,
             position: "fixed",
             marginTop: 6,
             boxShadow: 1,

@@ -24,15 +24,8 @@ const Daodetail = (props: { userData: userDataType }) => {
   const [initializing, setInitializing] = useState(true);
   const [disableJoin, setDisableJoin] = useState(false);
   const { user } = useMoralis();
-  console.log("user", user && user!.attributes);
+
   const [daoJoined, setDaoJoined] = useState(
-    props.userData &&
-      dao &&
-      props.userData.joinedDAOs &&
-      props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
-  );
-  console.log(
-    "wass this",
     props.userData &&
       dao &&
       props.userData.joinedDAOs &&
@@ -72,14 +65,11 @@ const Daodetail = (props: { userData: userDataType }) => {
         props.userData.joinedDAOs &&
         props.userData.joinedDAOs.findIndex((tmp) => tmp == thisDAO.id) > -1
     );
-    console.log(props.userData?.joinedDAOs);
   }
   useEffect(() => {
-    console.log("hiii");
-    console.log(daoid);
     if (daoid) return onSnapshot(doc(firestore, "daos", daoid!), onDAOUpdate);
   }, [daoid]);
-  console.log("userdata", props.userData);
+
   if (!initializing) {
     return (
       <Box
@@ -153,8 +143,6 @@ const Daodetail = (props: { userData: userDataType }) => {
 };
 export default Daodetail;
 const Content = (dao: dao) => {
-  console.log("dao");
-  console.log(dao);
   if (dao) {
     return (
       <Box

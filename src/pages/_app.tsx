@@ -18,12 +18,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     const [init,setInit]=useState(true)
     const { Moralis,isAuthenticated,user } = useMoralis()
     useEffect(() => {
-      console.log("you shouldnt see this too often!!")
-      console.log(user&&user.attributes)
+      
+      
       if (user&&user.attributes&&user.attributes.ethAddress&&isAuthenticated) {
-        console.log("dreii",user.attributes.ethAddress)
+        
         return onSnapshot(doc(getFirestore(firebaseApp), "users", user.attributes.ethAddress), (doc) => {
-          console.log("drei",console.log(doc.data()))
+          
           setUserData({ ...doc.data(), id: user!.attributes.ethAddress } as userDataType | undefined)
           setLoadingUserData(false)
         })
@@ -38,16 +38,16 @@ function MyApp({ Component, pageProps }: AppProps) {
     },[Moralis])
     /*useEffect(()=>{
       const event=Moralis.onWeb3Deactivated((result) => {
-        console.log("logout!!")
+        
         Moralis.User.logOut()
       });
     },[])*/
-    console.log("authii",isAuthenticated)
-    console.log("authii",user)
-    console.log("authii",user?.attributes)
-    console.log("authii",user&&Moralis.User.current())
-    console.log("loaduser",loadingUserData)
-    console.log("init",init)
+    
+    
+    
+    
+    
+    
     if(!init)
       return (
           <Component {...pageProps} userData={userData} loadUserData={loadingUserData}/>
@@ -59,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>The Forum</title>
         <meta name="description" content="The Forum" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Forum_transparentBG.gif" />
       </Head>
       <ThemeProvider theme={theme}>
         <MoralisProvider appId="3l6L6Gnoscz18tIvMaoCnTdwpNZ5mq0WJwOz2RTz" serverUrl="https://g3iyt7qela3c.usemoralis.com:2053/server">

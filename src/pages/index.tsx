@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Search } from '@mui/icons-material'
 const Home = (props:{userData:userDataType,loadUserData:boolean}) => {
   const { Moralis,user} = useMoralis()
-  console.log("user",user&&user.attributes.ethAddress)
+  
   return (
     user&&user.attributes.ethAddress ?
     !props.loadUserData?

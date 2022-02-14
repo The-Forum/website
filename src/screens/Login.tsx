@@ -5,8 +5,7 @@ import styles from "../styles/Home.module.css";
 
 export const Login = () => {
   const { authenticate, user, Moralis } = useMoralis();
-  console.log("moin");
-  console.log(user);
+
   const theme = useTheme();
   return (
     <Box
