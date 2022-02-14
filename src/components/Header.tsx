@@ -178,7 +178,7 @@ export function HeaderBar(props: {
             <Autocomplete
               options={results}
               onChange={(event, dao) =>
-                router.push("daos/[daoid]", "daos/" + (dao as dao).id)
+                router.push("/daos/[daoid]", "/daos/" + (dao as dao).id)
               }
               loading={results.length == 0}
               sx={{
