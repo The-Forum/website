@@ -1,6 +1,8 @@
+import { doc, Firestore, setDoc } from "firebase/firestore";
 import Moralis from "moralis/types";
 import { NextRouter } from "next/router";
 import { createContext } from "react";
+import { firestore } from "./firebaseConnection";
 
 export const preferences = [
   "Cryptocurrencies",
@@ -18,14 +20,10 @@ export const preferences = [
 ];
 export const userMenuItems = [
   {
-    text: "Profile",
-    action: (_router: NextRouter, _user: Moralis.UserConstructor) => {},
+    text: "Change Preferences",
   },
   {
     text: "Logout",
-    action: (router: NextRouter, user: Moralis.UserConstructor) => {
-      user.logOut().then(() => router.push("/"));
-    },
   },
 ];
 export type topic = typeof preferences[number];

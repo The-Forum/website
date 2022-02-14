@@ -16,10 +16,10 @@ export const Preference = memo(
         sx={{
           cursor: "pointer",
           position: "absolute",
-          width: 300,
-          height: 100,
-          left: props.x - 150,
-          top: props.y - 50,
+          width: 200,
+          height: 30,
+          left: props.x - 100,
+          top: props.y - 15,
           textAlign: "center",
           alignSelf: "center",
         }}

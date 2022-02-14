@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Grid,
+  Grow,
   IconButton,
   ImageList,
   ImageListItem,
@@ -14,6 +15,9 @@ import {
   Link,
   Menu,
   MenuItem,
+  MenuList,
+  Paper,
+  Popper,
   TextField,
   Tooltip,
   Typography,
@@ -21,17 +25,25 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import styles from "../styles/Home.module.css";
 import SearchIcon from "@mui/icons-material/Search";
-import { dao, userMenuItems } from "../util/types";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import {
+  dao,
+  UserDataContext,
+  userDataType,
+  userMenuItems,
+} from "../util/types";
 import React, { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 import { SearchBar, SearchIconWrapper } from "./SearchBar";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
 import {
   collection,
+  doc,
   endAt,
   getDocs,
   orderBy,
   query,
+  setDoc,
   startAt,
   where,
 } from "firebase/firestore";
@@ -49,32 +61,61 @@ Component displays a responsive app bar on the Homepage
 export function HeaderBar(props: {
   topLeft?: () => ReactNode;
   userId?: string;
+  userData?: userDataType;
 }) {
   const router = useRouter();
   let refInput = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const { width, height } = useWindowDimensions();
-  const { authenticate, Moralis } = useMoralis();
+  const { authenticate, Moralis, user } = useMoralis();
   //Initializes user state hook
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState([] as dao[]);
-  //Handler to open user menu. References the current item on the user menu
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
   };
-  // Handler to close user menu. Set current item to null
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleClose = (event: Event | React.SyntheticEvent) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
+    setOpen(false);
   };
+
+  function handleListKeyDown(event: React.KeyboardEvent) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === "Escape") {
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current!.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
   useEffect(() => {
     async function getSearchResults() {
       const querySnapshot = await getDocs(
         query(
           collection(firestore, "daos"),
           orderBy("name"),
-          startAt(searchText),
-          endAt(searchText + "~")
+          startAt(searchText[0].toUpperCase() + searchText.slice(1)),
+          endAt(searchText[0].toUpperCase() + searchText.slice(1) + "~")
         )
       );
       const listDao = [] as dao[];
@@ -88,7 +129,7 @@ export function HeaderBar(props: {
       getSearchResults();
     }
   }, [searchText]);
-
+  console.log("userr", props.userData);
   return (
     <Box sx={{ flexgrow: 1 }}>
       <AppBar
@@ -104,7 +145,7 @@ export function HeaderBar(props: {
             minHeight: 50,
           }}
         >
-          {(!searchVisible || width > 500) && (
+          {(!searchVisible || width! > 500) && (
             <img
               src="/Forum_transparentBG.gif"
               loading="lazy"
@@ -136,7 +177,9 @@ export function HeaderBar(props: {
             </SearchIconWrapper>*/}
             <Autocomplete
               options={results}
-              onChange={(event, dao) => router.push("[daoid]", (dao as dao).id)}
+              onChange={(event, dao) =>
+                router.push("daos/[daoid]", "daos/" + (dao as dao).id)
+              }
               loading={results.length == 0}
               sx={{
                 border: 0,
@@ -171,9 +214,10 @@ export function HeaderBar(props: {
                     placeholder="Discover DAOs on The Forum"
                     sx={{
                       border: 0,
-                      display: !searchVisible && width <= 500 ? "none" : "flex",
+                      display:
+                        !searchVisible && width! <= 500 ? "none" : "flex",
                       ...(searchVisible &&
-                        width <= 500 && {
+                        width! <= 500 && {
                           width: "80%",
                           position: "absolute",
                           alignSelf: "center",
@@ -206,52 +250,89 @@ export function HeaderBar(props: {
           <Grid item sx={{ display: "flex", flexShrink: 0, marginLeft: 2 }}>
             {props.userId ? (
               <Fragment>
-                {width > 875 && (
+                {width! > 875 && (
                   <Box component="h5" sx={{ color: "black" }}>
                     Welcome, {props.userId}
                   </Box>
                 )}
-                {width <= 500 && !searchVisible && (
+                {width! <= 500 && !searchVisible && (
                   <SearchIcon
                     sx={{ color: "black", alignSelf: "center" }}
                     onClick={() => setSearchVisible(true)}
                   />
                 )}
-                <Tooltip title="Open User Menu">
-                  <IconButton
-                    onClick={handleOpenUserMenu}
-                    sx={{ marginRight: 1 }}
-                  >
-                    <SettingsIcon />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
+                <IconButton
+                  ref={anchorRef}
+                  sx={{ marginRight: 1 }}
+                  onClick={handleToggle}
                 >
-                  {userMenuItems.map((setting) => (
-                    <MenuItem key={setting.text} onClick={handleCloseUserMenu}>
-                      <Typography
-                        textAlign="center"
-                        onClick={() => setting.action(router, Moralis.User)}
-                      >
-                        {setting.text}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
+                  <SettingsIcon />
+                </IconButton>
+                <Popper
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  role={undefined}
+                  placement="bottom-start"
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin:
+                          placement === "bottom-start"
+                            ? "left top"
+                            : "left bottom",
+                      }}
+                    >
+                      <Paper>
+                        <ClickAwayListener onClickAway={handleClose}>
+                          <MenuList
+                            autoFocusItem={open}
+                            id="composition-menu"
+                            aria-labelledby="composition-button"
+                            onKeyDown={handleListKeyDown}
+                          >
+                            {userMenuItems.map((setting) => (
+                              <MenuItem key={setting.text}>
+                                <Typography
+                                  textAlign="center"
+                                  onClick={(event) => {
+                                    if (setting.text == "Change Preferences")
+                                      setDoc(
+                                        doc(
+                                          firestore,
+                                          "users",
+                                          user!.attributes.ethAddress
+                                        ),
+                                        {
+                                          joinedDAOs: props.userData.joinedDAOs
+                                            ? props.userData.joinedDAOs
+                                            : [],
+                                          id: props.userData.id,
+                                          preferences: "",
+                                        }
+                                      ).then(() => router.push("/"));
+                                    else {
+                                      Moralis.User.logOut().then(() =>
+                                        router.push("/")
+                                      );
+                                      console.log("lol");
+                                    }
+                                    handleClose(event);
+                                  }}
+                                >
+                                  {setting.text}
+                                </Typography>
+                              </MenuItem>
+                            ))}
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
               </Fragment>
             ) : (
               <Button onClick={() => authenticate()} variant="contained">

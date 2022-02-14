@@ -27,7 +27,7 @@ import _ from "lodash";
 import InfiniteScroll from "react-infinite-scroll-component";
 export function Homepage(props: { userData: userDataType }) {
   const { width, height } = useWindowDimensions();
-  const homepageWidth = width - 16;
+  const homepageWidth = width! - 16;
   const [lastCategory, setLastCategory] = useState(-10 as number);
   const [categories, setCategories] = useState(
     [] as {
@@ -211,7 +211,10 @@ export function Homepage(props: { userData: userDataType }) {
         scrollBehavior: "smooth",
       }}
     >
-      <HeaderBar userId={props.userData && props.userData.id} />
+      <HeaderBar
+        userId={props.userData && props.userData.id}
+        userData={props.userData}
+      />
       <Box
         component="div"
         sx={{ flexDirection: "column", display: "flex", flex: 1 }}

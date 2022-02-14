@@ -1,22 +1,24 @@
 import { Box, Button, Grid, IconButton, Toolbar } from "@mui/material";
 import {
   doc,
+  DocumentReference,
   DocumentSnapshot,
+  getFirestore,
   onSnapshot,
   runTransaction,
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { HeaderBar } from "../components/Header";
-import { Sidebar } from "../components/Sidebar";
-import { firestore } from "../util/firebaseConnection";
-import { dao, UserDataContext, userDataType } from "../util/types";
-import styles from "../styles/Home.module.css";
+import { HeaderBar } from "../../components/Header";
+import { Sidebar } from "../../components/Sidebar";
+import { firebaseApp, firestore } from "../../util/firebaseConnection";
+import { dao, UserDataContext, userDataType } from "../../util/types";
+import styles from "../../styles/Home.module.css";
 import Iframe from "react-iframe";
 import { style } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
-import { useWindowDimensions } from "../components/Hooks";
+import { useWindowDimensions } from "../../components/Hooks";
 const Daodetail = (props: { userData: userDataType }) => {
   const router = useRouter();
   const { daoid } = router.query;
@@ -67,7 +69,12 @@ const Daodetail = (props: { userData: userDataType }) => {
     );
   }
   useEffect(() => {
-    if (daoid) return onSnapshot(doc(firestore, "daos", daoid!), onDAOUpdate);
+    if (daoid)
+      return onSnapshot(
+        // @ts-ignore
+        doc(getFirestore(firebaseApp), "daos", daoid!),
+        onDAOUpdate
+      );
   }, [daoid]);
 
   if (!initializing) {

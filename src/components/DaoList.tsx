@@ -65,7 +65,7 @@ export function DaoList(props: {
                     onClick={() =>
                       dao != {} &&
                       (dao as dao).image &&
-                      router.push("[daoid]", (dao as dao).id)
+                      router.push("daos/[daoid]", "daos/" + (dao as dao).id)
                     }
                     style={{ cursor: "pointer" }}
                   >
