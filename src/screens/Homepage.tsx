@@ -27,7 +27,7 @@ import _ from "lodash";
 import InfiniteScroll from "react-infinite-scroll-component";
 export function Homepage(props: { userData: userDataType }) {
   const { width, height } = useWindowDimensions();
-  const homepageWidth = width - 16;
+  const homepageWidth = width! - 16;
   const [lastCategory, setLastCategory] = useState(-10 as number);
   const [categories, setCategories] = useState(
     [] as {
@@ -86,12 +86,11 @@ export function Homepage(props: { userData: userDataType }) {
       : (new Array(categories.length).fill({}) as QueryDocumentSnapshot<
           DocumentData
         >[]);
-    console.log("1start");
+
     await Promise.all(
       categories.map(async (category, index) => {
         if (index > lastCategory && index <= lastCategory + 4) {
-          console.log("1index", index);
-          let querySnapshot: QuerySnapshot<DocumentData>;
+          let querySnapshot: QuerySnapshot<DocumentData> | never[];
           if (category.categories)
             querySnapshot = await getDocs(
               query(
@@ -101,7 +100,10 @@ export function Homepage(props: { userData: userDataType }) {
                 limit(10)
               )
             );
-          else
+          else if (
+            props.userData.joinedDAOs &&
+            props.userData.joinedDAOs.length > 0
+          )
             querySnapshot = await getDocs(
               query(
                 collection(firestore, "daos"),
@@ -112,33 +114,33 @@ export function Homepage(props: { userData: userDataType }) {
                 )
               )
             );
-          console.log("index", index);
+          else querySnapshot = [];
+
           const listDao = [] as dao[];
           querySnapshot.forEach((daoItem) => {
             listDao.push(daoItem.data() as dao);
           });
-          console.log("liiist", listDao);
+
           if (listDao && listDao.length > 0) {
-            tmpLastDao[index] = querySnapshot.docs.at(-1)!;
-            //console.log("mmh one last dao", lastDao[index]);
+            tmpLastDao[index] = (querySnapshot as QuerySnapshot<
+              DocumentData
+            >).docs.at(-1)!;
+            //
             tmp[index] = listDao;
           }
         }
       })
     );
-    console.log("1end");
+
     if (tmp != []) {
-      console.log("mmhLastDao", tmpLastDao);
-      console.log("mmhLastDao", tmp);
       setDaos(tmp.slice());
       setLastDao(tmpLastDao.slice());
     }
     setInitializing(false);
   }
   async function moreDaos(categoryIndex: number) {
-    console.log("mmh", lastDao[categoryIndex]);
     if (!refreshing) {
-      let querySnapshot = [] as QuerySnapshot<DocumentData>;
+      let querySnapshot: QuerySnapshot<DocumentData> | never[];
       if (categories[categoryIndex].categories)
         querySnapshot = await getDocs(
           query(
@@ -156,10 +158,6 @@ export function Homepage(props: { userData: userDataType }) {
       else {
         const lastIndex = props.userData.joinedDAOs!.findIndex(
           (joinedDao) => joinedDao == lastDao[categoryIndex].data().id
-        );
-        console.log(
-          "lastIndex",
-          props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
         );
         if (
           props.userData.joinedDAOs?.sort().slice(lastIndex + 1, lastIndex + 11)
@@ -179,17 +177,25 @@ export function Homepage(props: { userData: userDataType }) {
               )
             )
           );
+        else querySnapshot = [];
       }
       const listDao = daos;
       const tmpLastDao = lastDao;
       querySnapshot.forEach((daoItem) => {
         listDao[categoryIndex].push(daoItem.data() as dao);
       });
-      console.log("more", listDao);
-      if (querySnapshot.docs && querySnapshot.docs.length > 0) {
-        setDaos(listDao.slice());
-        tmpLastDao[categoryIndex] = querySnapshot.docs.at(-1)!;
-        setLastDao(tmpLastDao);
+
+      if (querySnapshot != []) {
+        if (
+          (querySnapshot as QuerySnapshot<DocumentData>).docs &&
+          (querySnapshot as QuerySnapshot<DocumentData>).docs.length > 0
+        ) {
+          setDaos(listDao.slice());
+          tmpLastDao[categoryIndex] = (querySnapshot as QuerySnapshot<
+            DocumentData
+          >).docs.at(-1)!;
+          setLastDao(tmpLastDao);
+        }
       }
       setRefreshing(true);
     }
@@ -205,7 +211,10 @@ export function Homepage(props: { userData: userDataType }) {
         scrollBehavior: "smooth",
       }}
     >
-      <HeaderBar userId={props.userData && props.userData.id} />
+      <HeaderBar
+        userId={props.userData && props.userData.id}
+        userData={props.userData}
+      />
       <Box
         component="div"
         sx={{ flexDirection: "column", display: "flex", flex: 1 }}

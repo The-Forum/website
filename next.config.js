@@ -7,6 +7,7 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
+  distDir: "build",
 };
 const withTM = require("next-transpile-modules")(["react-chatbox-component"]);
 

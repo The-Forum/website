@@ -3,7 +3,7 @@ import { Box, Button } from "@mui/material";
 import { memo, useEffect, useState } from "react";
 import { useWindowDimensions } from "../components/Hooks";
 import { Preference } from "../components/Preference";
-import { preference, preferences } from "../util/types";
+import { preferences } from "../util/types";
 import styles from "../styles/Home.module.css";
 import { firebaseApp, firestore } from "../util/firebaseConnection";
 import { doc, setDoc } from "firebase/firestore";
@@ -21,15 +21,16 @@ export const SignUp = () => {
   );
   useEffect(() => {
     let tmpCoords = [] as { x: number; y: number }[];
-    preferences.map((preference: preference, index) => {
+    preferences.map((preference, index) => {
       tmpCoords.push({
         x:
-          (Math.sin((index / preferences.length) * Math.PI * 2) * width) / 2.5 +
-          width / 2,
-        y:
-          (Math.cos((index / preferences.length) * Math.PI * 2) * height) /
+          (Math.sin((index / preferences.length) * Math.PI * 2) * width!) /
             2.5 +
-          height / 2,
+          width! / 2,
+        y:
+          (Math.cos((index / preferences.length) * Math.PI * 2) * height!) /
+            2.5 +
+          height! / 2,
       });
     });
     setTextCoords(tmpCoords.slice());
@@ -39,7 +40,7 @@ export const SignUp = () => {
       return {
         topic: preferences[index],
         value: Math.sqrt(
-          (textCoord.x - width / 2) ** 2 + (textCoord.y - height / 2) ** 2
+          (textCoord.x - width! / 2) ** 2 + (textCoord.y - height! / 2) ** 2
         ),
       };
     }) as { topic: string; value: number }[];
@@ -80,10 +81,11 @@ export const SignUp = () => {
           onClick={setPreferences}
           variant="contained"
           className={styles.walletButton}
+          sx={{ marginTop: 1 }}
         >
           Confirm your preferences
         </Button>
-        {preferences.map((preference: preference, index) => {
+        {preferences.map((preference, index) => {
           return (
             <Preference
               key={index}
@@ -99,7 +101,6 @@ export const SignUp = () => {
                     y: coords.y - textCoords[index].y,
                   });
                 } else {
-                  console.log("up");
                   setDraggedPref(-1);
                 }
               }}

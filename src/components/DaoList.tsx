@@ -29,8 +29,7 @@ export function DaoList(props: {
   refreshDone: () => void;
 }) {
   const router = useRouter();
-  console.log("more daos not shown");
-  console.log("props", props.daos);
+
   return (
     <Box sx={{ paddingLeft: 2, marginTop: 8 }}>
       <Typography
@@ -43,7 +42,6 @@ export function DaoList(props: {
         <ImageList
           sx={{ display: "flex", flexDirection: "row", flex: 1 }}
           onScroll={(e) => {
-            console.log("sroller", e.target);
             if (
               props.daos &&
               (e.target as any).scrollLeft / (e.target as any).scrollLeftMax ==
@@ -55,7 +53,6 @@ export function DaoList(props: {
         >
           {props.daos && props.daos.length > 0
             ? props.daos.map((dao, index) => {
-                console.log("daaao", dao);
                 return (
                   <ImageListItem
                     key={index}
@@ -68,7 +65,7 @@ export function DaoList(props: {
                     onClick={() =>
                       dao != {} &&
                       (dao as dao).image &&
-                      router.push("[daoid]", (dao as dao).id)
+                      router.push("daos/[daoid]", "daos/" + (dao as dao).id)
                     }
                     style={{ cursor: "pointer" }}
                   >
