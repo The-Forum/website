@@ -157,9 +157,9 @@ const Content = (dao: dao) => {
         component="div"
         sx={{
           loading: "lazy",
-          backgroundImage:
-            "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")",
-          backgroundSize: "cover",
+          backgroundImage: dao.avatar.slice(7)
+            ? "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")"
+            : "url(" + dao.image + ")",
           width: "100%",
           backgroundPosition: "center",
         }}
@@ -184,7 +184,11 @@ const Content = (dao: dao) => {
               sx={{ display: "flex" }}
             >
               <Box sx={{ flex: 1, display: "flex", margin: 1 }}>
-                <div dangerouslySetInnerHTML={{ __html: dao.description }} />
+                {dao.description ? (
+                  <div dangerouslySetInnerHTML={{ __html: dao.description }} />
+                ) : (
+                  <div>No description available</div>
+                )}
               </Box>
             </Grid>
             <Grid item xs={0} sm={2} md={3} />

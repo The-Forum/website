@@ -10,7 +10,6 @@ export const preferences = [
   "Venture Capital",
   "Sports",
   "Gaming",
-  "Culture",
   "Art",
   "Food",
   "Community",

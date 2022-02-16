@@ -1,4 +1,4 @@
-import { Box, List } from "@mui/material";
+import { Box, Button, Link, List } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { HeaderBar } from "../components/Header";
@@ -23,8 +23,9 @@ import { firestore } from "../util/firebaseConnection";
 import { dao, UserDataContext, userDataType } from "../util/types";
 import { setDefaultResultOrder } from "dns/promises";
 import { useWindowDimensions } from "../components/Hooks";
-import _ from "lodash";
+//import _ from "lodash";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { Footer } from "../components/Footer";
 export function Homepage(props: { userData: userDataType }) {
   const { width, height } = useWindowDimensions();
   const homepageWidth = width! - 16;
@@ -83,9 +84,9 @@ export function Homepage(props: { userData: userDataType }) {
       : (new Array(categories.length).fill([{}]) as dao[][]);
     const tmpLastDao = lastDao
       ? lastDao
-      : (new Array(categories.length).fill({}) as QueryDocumentSnapshot<
-          DocumentData
-        >[]);
+      : (new Array(categories.length).fill(
+          {}
+        ) as QueryDocumentSnapshot<DocumentData>[]);
 
     await Promise.all(
       categories.map(async (category, index) => {
@@ -122,9 +123,9 @@ export function Homepage(props: { userData: userDataType }) {
           });
 
           if (listDao && listDao.length > 0) {
-            tmpLastDao[index] = (querySnapshot as QuerySnapshot<
-              DocumentData
-            >).docs.at(-1)!;
+            tmpLastDao[index] = (
+              querySnapshot as QuerySnapshot<DocumentData>
+            ).docs.at(-1)!;
             //
             tmp[index] = listDao;
           }
@@ -191,9 +192,9 @@ export function Homepage(props: { userData: userDataType }) {
           (querySnapshot as QuerySnapshot<DocumentData>).docs.length > 0
         ) {
           setDaos(listDao.slice());
-          tmpLastDao[categoryIndex] = (querySnapshot as QuerySnapshot<
-            DocumentData
-          >).docs.at(-1)!;
+          tmpLastDao[categoryIndex] = (
+            querySnapshot as QuerySnapshot<DocumentData>
+          ).docs.at(-1)!;
           setLastDao(tmpLastDao);
         }
       }
@@ -256,6 +257,7 @@ export function Homepage(props: { userData: userDataType }) {
         </Box>
         {/*<Sidebar width={300} chatBoxHeight={200} />*/}
       </Box>
+      <Footer />
     </Box>
   );
 }

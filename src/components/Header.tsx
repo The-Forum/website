@@ -307,10 +307,13 @@ export function HeaderBar(props: {
                                           user!.attributes.ethAddress
                                         ),
                                         {
-                                          joinedDAOs: props.userData.joinedDAOs
-                                            ? props.userData.joinedDAOs
-                                            : [],
-                                          id: props.userData.id,
+                                          joinedDAOs:
+                                            props.userData &&
+                                            props.userData.joinedDAOs
+                                              ? props.userData.joinedDAOs
+                                              : [],
+                                          id:
+                                            props.userData && props.userData.id,
                                           preferences: "",
                                         }
                                       ).then(() => router.push("/"));

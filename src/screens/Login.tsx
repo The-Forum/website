@@ -1,6 +1,7 @@
 import { CSSProperties } from "@emotion/serialize";
 import { Box, Button, useTheme } from "@mui/material";
 import { useMoralis } from "react-moralis";
+import { Footer } from "../components/Footer";
 import styles from "../styles/Home.module.css";
 
 export const Login = () => {
@@ -35,6 +36,7 @@ export const Login = () => {
       >
         Connect Wallet
       </Button>
+      {/*<Footer />*/}
     </Box>
   );
 };
