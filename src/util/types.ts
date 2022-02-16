@@ -34,6 +34,7 @@ export interface userDataType {
   }[];
   joinedDAOs?: string[];
   id: string;
+  avatar: string;
 }
 export interface message {
   text: string;

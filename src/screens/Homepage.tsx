@@ -254,7 +254,7 @@ export function Homepage(props: { userData: userDataType }) {
             </InfiniteScroll>
           ) : null}
         </Box>
-        {/*<Sidebar width={300} chatBoxHeight={200} />*/}
+        <Sidebar />
       </Box>
     </Box>
   );

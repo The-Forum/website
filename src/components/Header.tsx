@@ -251,7 +251,10 @@ export function HeaderBar(props: {
             {props.userId ? (
               <Fragment>
                 {width! > 875 && (
-                  <Box component="h5" sx={{ color: "black" }}>
+                  <Box
+                    component="h5"
+                    sx={{ color: "black", alignSelf: "center" }}
+                  >
                     Welcome, {props.userId}
                   </Box>
                 )}
@@ -264,9 +267,15 @@ export function HeaderBar(props: {
                 <IconButton
                   ref={anchorRef}
                   sx={{ marginRight: 1 }}
-                  onClick={handleToggle}
+                  onClick={
+                    () =>
+                      router.push(
+                        "/users/[userid]",
+                        "/users/" + props.userData.id
+                      ) /*handleToggle*/
+                  }
                 >
-                  <SettingsIcon />
+                  <Avatar src={props.userData && props.userData.avatar} />
                 </IconButton>
                 <Popper
                   open={open}

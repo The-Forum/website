@@ -14,6 +14,7 @@ import { message } from "../util/types";
 import { useMoralis } from "react-moralis";
 import { MessageSharp } from "@mui/icons-material";
 import styles from "../styles/Home.module.css";
+import { Box } from "@mui/material";
 export const Chat = () => {
   const [messages, setMessages] = useState([] as message[]);
   const { Moralis, user } = useMoralis();
@@ -32,9 +33,17 @@ export const Chat = () => {
   }, []);
   if (user && user.attributes.ethAddress)
     return (
-      <div className={styles.chat}>
-        Placeholder
-        {/*<ChatBox
+      <Box
+        sx={{
+          justifySelf: "flex-end",
+          alignSelf: "flex-end",
+          height: 400,
+          overflowY: "scroll",
+          width: 400,
+        }}
+        className={styles.chat}
+      >
+        <ChatBox
           messages={messages}
           user={{
             uid: user.attributes.ethAddress,
@@ -51,8 +60,8 @@ export const Chat = () => {
               },
             });
           }}
-        />*/}
-      </div>
+        />
+      </Box>
     );
   else {
     return null;

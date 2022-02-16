@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, Toolbar } from "@mui/material";
+import { Avatar, Box, Button, Grid, IconButton, Toolbar } from "@mui/material";
 import {
   doc,
   DocumentReference,
@@ -19,63 +19,29 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
 import { useWindowDimensions } from "../../components/Hooks";
-const Daodetail = (props: { userData: userDataType }) => {
+const UserDetail = (props: { userData: userDataType }) => {
   const router = useRouter();
-  const { daoid } = router.query;
+  const { userId } = router.query;
   const [dao, setDao] = useState({} as dao);
   const [initializing, setInitializing] = useState(true);
   const [disableJoin, setDisableJoin] = useState(false);
   const { user } = useMoralis();
+  const [displayedUser, setDisplayedUser] = useState({} as userDataType);
 
-  const [daoJoined, setDaoJoined] = useState(
-    props.userData &&
-      dao &&
-      props.userData.joinedDAOs &&
-      props.userData.joinedDAOs.findIndex((tmp) => tmp == dao.id) > -1
-  );
-  async function toggleDAOjoined() {
-    setDisableJoin(true);
-    setDaoJoined(!daoJoined);
-    await runTransaction(firestore, async (transaction) => {
-      const docRef = doc(
-        firestore,
-        "users",
-        props.userData ? props.userData.id : ""
-      );
-      const snapshot = (await transaction.get(docRef)).data() as userDataType;
-      let joinedDAOlist: string[];
-      if (
-        !snapshot ||
-        !snapshot.joinedDAOs ||
-        snapshot.joinedDAOs!.indexOf(dao.id) == -1
-      )
-        joinedDAOlist = snapshot.joinedDAOs
-          ? [...snapshot.joinedDAOs, dao.id]
-          : [dao.id];
-      else joinedDAOlist = snapshot.joinedDAOs.filter((tmp) => tmp != dao.id);
-      transaction.update(docRef, { joinedDAOs: joinedDAOlist });
-    });
-    setDisableJoin(false);
-  }
-  function onDAOUpdate(doc: DocumentSnapshot) {
-    const thisDAO = doc.data()! as dao;
-    setDao(thisDAO);
-    setInitializing(false);
-    setDaoJoined(
-      props.userData &&
-        thisDAO &&
-        props.userData.joinedDAOs &&
-        props.userData.joinedDAOs.findIndex((tmp) => tmp == thisDAO.id) > -1
-    );
-  }
   useEffect(() => {
-    if (daoid)
+    if (userId && userId != props.userData.id)
       return onSnapshot(
         // @ts-ignore
-        doc(getFirestore(firebaseApp), "daos", daoid!),
-        onDAOUpdate
+        doc(getFirestore(firebaseApp), "users", userId!),
+        (userData) => {
+          setDisplayedUser(userData.data() as userDataType);
+          setInitializing(false);
+        }
       );
-  }, [daoid]);
+    else {
+      setInitializing(false);
+    }
+  }, [userId]);
 
   if (!initializing) {
     return (
@@ -88,50 +54,7 @@ const Daodetail = (props: { userData: userDataType }) => {
           width: "100%",
         }}
       >
-        <HeaderBar
-          userId={props.userData && props.userData.id}
-          topLeft={() =>
-            dao && (
-              <Box sx={{ backgroundColor: "secondary.main", width: 250 }}>
-                <Box
-                  sx={{
-                    paddingLeft: 1,
-                    paddingBottom: 0,
-                    flexDirection: "row",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <h2 color="black">{!initializing && dao.name}</h2>
-                  {/*<IconButton href={"/"}>
-                    <CloseIcon />
-                  </IconButton>*/}
-                </Box>
-                {props.userData &&
-                  props.userData.id &&
-                  (!daoJoined ? (
-                    <Button
-                      variant="contained"
-                      sx={{ width: 230, margin: 1 }}
-                      onClick={toggleDAOjoined}
-                      disabled={disableJoin}
-                    >
-                      Join DAO
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      sx={{ width: 230, margin: 1 }}
-                      onClick={toggleDAOjoined}
-                      disabled={disableJoin}
-                    >
-                      Leave DAO
-                    </Button>
-                  ))}
-              </Box>
-            )
-          }
-        />
+        <HeaderBar userId={props.userData && props.userData.id} />
         <Box
           component="div"
           sx={{
@@ -142,13 +65,33 @@ const Daodetail = (props: { userData: userDataType }) => {
             marginTop: 6,
           }}
         >
-          {!initializing && Content(dao)}
+          {!initializing && (
+            <Box
+              component="div"
+              sx={{
+                loading: "lazy",
+                backgroundSize: "cover",
+                width: "100%",
+                backgroundPosition: "center",
+                marginTop: 4,
+                marginLeft: 2,
+              }}
+            >
+              <Avatar
+                src={props.userData && props.userData.avatar}
+                sx={{
+                  width: 100,
+                  height: 100,
+                }}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
     );
   } else return null;
 };
-export default Daodetail;
+export default UserDetail;
 const Content = (dao: dao) => {
   if (dao) {
     return (

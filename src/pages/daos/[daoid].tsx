@@ -161,99 +161,94 @@ const Content = (dao: dao) => {
             "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")",
           backgroundSize: "cover",
           width: "100%",
+          height: "100%",
           backgroundPosition: "center",
         }}
       >
         <Box
           sx={{
             display: "flex",
-            marginTop: 15,
-            minHeight: "70vh",
+            alignItems: "flex-end",
+            marginTop: 3,
+            marginLeft: 15,
             flexDirection: "column",
             position: "relative",
           }}
         >
-          <Grid container sx={{ flex: 1, display: "flex" }}>
-            <Grid item xs={0} sm={2} md={3} />
-            <Grid
-              item
-              xs={12}
-              sm={8}
-              md={6}
-              className={styles.daodetailtext}
-              sx={{ display: "flex" }}
-            >
-              <Box sx={{ flex: 1, display: "flex", margin: 1 }}>
-                <div dangerouslySetInnerHTML={{ __html: dao.description }} />
-              </Box>
-            </Grid>
-            <Grid item xs={0} sm={2} md={3} />
-          </Grid>
-          <Grid container>
-            <Grid item xs={0} sm={2} md={3} />
-            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={dao.links.blockchain_site[0]}
-                target="_blank"
-                disabled={
-                  !dao.links.blockchain_site[0] ||
-                  dao.links.blockchain_site[0] == ""
-                }
-              >
-                Token
-              </Button>
-            </Grid>
-            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={dao.links.homepage[0]}
-                target="_blank"
-                disabled={!dao.links.homepage[0] || dao.links.homepage[0] == ""}
-              >
-                Website
-              </Button>
-            </Grid>
-            <Grid item xs={0} sm={2} md={3} />
-            <Grid item xs={0} sm={2} md={3} />
-            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={"https://twitter.com/" + dao.links.twitter_screen_name}
-                target="_blank"
-                disabled={
-                  !dao.links.twitter_screen_name ||
-                  dao.links.twitter_screen_name == ""
-                }
-              >
-                Twitter
-              </Button>
-            </Grid>
-            <Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
-              <Button
-                variant="contained"
-                sx={{ flex: 1, display: "flex", margin: 1 }}
-                href={dao.links.chat_url[0] || "a"}
-                target="_blank"
-                disabled={!dao.links.chat_url[0] || dao.links.chat_url[0] == ""}
-              >
-                Discord
-              </Button>
-            </Grid>
-            <Grid item xs={0} sm={2} md={3} />
-          </Grid>
+          <Box
+            className={styles.daodetailtext}
+            sx={{ maxWidth: 500, display: "flex" }}
+          >
+            <div
+              dangerouslySetInnerHTML={{
+                __html:
+                  dao.description.split(".")[0] + dao.description.split(".")[1],
+              }}
+            />
+          </Box>
         </Box>
-        {/*<Iframe
-          url="https://shinedao.finance/"
-          className={styles.frame}
-          frameBorder={0}
-          width="100%"
-          overflow="hidden"
-          height="100%"
-        />*/}
+        <Grid container sx={{ marginTop: 7 }}>
+          <Grid item xs={6} sm={4} md={4} className={styles.daodetailtext}>
+            <Button
+              variant="contained"
+              sx={{ flex: 1, display: "flex", margin: 1 }}
+              href={dao.links.blockchain_site[0]}
+              target="_blank"
+              disabled={
+                !dao.links.blockchain_site[0] ||
+                dao.links.blockchain_site[0] == ""
+              }
+            >
+              Token
+            </Button>
+          </Grid>
+          {/*<Grid item xs={6} sm={4} md={3} className={styles.daodetailtext}>
+            <Button
+              variant="contained"
+              sx={{ flex: 1, display: "flex", margin: 1 }}
+              href={dao.links.homepage[0]}
+              target="_blank"
+              disabled={!dao.links.homepage[0] || dao.links.homepage[0] == ""}
+            >
+              Website
+            </Button>
+          </Grid>*/}
+          <Grid item xs={6} sm={4} md={4} className={styles.daodetailtext}>
+            <Button
+              variant="contained"
+              sx={{ flex: 1, display: "flex", margin: 1 }}
+              href={"https://twitter.com/" + dao.links.twitter_screen_name}
+              target="_blank"
+              disabled={
+                !dao.links.twitter_screen_name ||
+                dao.links.twitter_screen_name == ""
+              }
+            >
+              Twitter
+            </Button>
+          </Grid>
+          <Grid item xs={6} sm={4} md={4} className={styles.daodetailtext}>
+            <Button
+              variant="contained"
+              sx={{ flex: 1, display: "flex", margin: 1 }}
+              href={dao.links.chat_url[0] || "a"}
+              target="_blank"
+              disabled={!dao.links.chat_url[0] || dao.links.chat_url[0] == ""}
+            >
+              Discord
+            </Button>
+          </Grid>
+        </Grid>
+        {dao.links.homepage[0] && (
+          <Iframe
+            url={dao.links.homepage[0]}
+            className={styles.frame}
+            frameBorder={0}
+            width="100%"
+            overflow="hidden"
+            height="450px"
+          />
+        )}
       </Box>
     );
   } else {
