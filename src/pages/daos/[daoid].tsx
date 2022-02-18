@@ -96,11 +96,13 @@ const Daodetail = (props: { userData: userDataType }) => {
               <Box sx={{ backgroundColor: "secondary.main", width: 250 }}>
                 <Box
                   sx={{
+                    backgroundColor: "secondary.main",
                     paddingLeft: 1,
                     paddingBottom: 0,
                     flexDirection: "row",
                     display: "flex",
                     justifyContent: "center",
+                    color: "primary.main",
                   }}
                 >
                   <h2 color="black">{!initializing && dao.name}</h2>
@@ -151,6 +153,7 @@ const Daodetail = (props: { userData: userDataType }) => {
 };
 export default Daodetail;
 const Content = (dao: dao) => {
+  console.log("d", dao.avatar.slice(7));
   if (dao) {
     return (
       <Box
@@ -168,7 +171,6 @@ const Content = (dao: dao) => {
           sx={{
             display: "flex",
             marginTop: 15,
-            minHeight: "70vh",
             flexDirection: "column",
             position: "relative",
           }}
