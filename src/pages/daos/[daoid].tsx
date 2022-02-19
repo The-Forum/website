@@ -19,7 +19,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/router";
 import { useMoralis } from "react-moralis";
 import { useWindowDimensions } from "../../components/Hooks";
-const Daodetail = (props: { userData: userDataType }) => {
+const Daodetail = (props: {
+  userData: userDataType;
+  loadUserData: boolean;
+}) => {
   const router = useRouter();
   const { daoid } = router.query;
   const [dao, setDao] = useState({} as dao);
@@ -58,6 +61,8 @@ const Daodetail = (props: { userData: userDataType }) => {
     setDisableJoin(false);
   }
   function onDAOUpdate(doc: DocumentSnapshot) {
+    console.log("wutttttfd", doc.data());
+    console.log("wuthhh", props.userData);
     const thisDAO = doc.data()! as dao;
     setDao(thisDAO);
     setInitializing(false);
@@ -68,16 +73,17 @@ const Daodetail = (props: { userData: userDataType }) => {
         props.userData.joinedDAOs.findIndex((tmp) => tmp == thisDAO.id) > -1
     );
   }
+  console.log("wutt", daoJoined);
   useEffect(() => {
-    if (daoid)
+    if (daoid && !props.loadUserData)
       return onSnapshot(
         // @ts-ignore
         doc(getFirestore(firebaseApp), "daos", daoid!),
         onDAOUpdate
       );
-  }, [daoid]);
+  }, [daoid, props.loadUserData]);
 
-  if (!initializing) {
+  if (!initializing && !props.loadUserData) {
     return (
       <Box
         component="div"
@@ -119,7 +125,7 @@ const Daodetail = (props: { userData: userDataType }) => {
                       onClick={toggleDAOjoined}
                       disabled={disableJoin}
                     >
-                      Join DAO
+                      Add to my list
                     </Button>
                   ) : (
                     <Button
@@ -128,7 +134,7 @@ const Daodetail = (props: { userData: userDataType }) => {
                       onClick={toggleDAOjoined}
                       disabled={disableJoin}
                     >
-                      Leave DAO
+                      Remove from my list
                     </Button>
                   ))}
               </Box>
@@ -153,16 +159,16 @@ const Daodetail = (props: { userData: userDataType }) => {
 };
 export default Daodetail;
 const Content = (dao: dao) => {
-  console.log("d", dao.avatar.slice(7));
   if (dao) {
     return (
       <Box
         component="div"
         sx={{
           loading: "lazy",
-          backgroundImage: dao.avatar.slice(7)
-            ? "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")"
-            : "url(" + dao.image + ")",
+          backgroundImage:
+            dao.avatar && dao.avatar.slice(7)
+              ? "url(https://ipfs.io/ipfs/" + dao.avatar.slice(7) + ")"
+              : "url(" + dao.image + ")",
           width: "100%",
           backgroundPosition: "center",
         }}
