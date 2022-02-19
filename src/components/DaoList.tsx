@@ -17,7 +17,6 @@ import {
   where,
 } from "firebase/firestore";
 import { Fragment, useEffect, useState } from "react";
-import Image from "next/Image";
 import styles from "../styles/Home.module.css";
 import { useWindowDimensions } from "./Hooks";
 import { useRouter } from "next/router";

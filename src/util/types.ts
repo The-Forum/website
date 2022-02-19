@@ -7,7 +7,7 @@ import { firestore } from "./firebaseConnection";
 export const preferences = [
   "Cryptocurrencies",
   "Investing",
-  "Venture Capital",
+  "Finance",
   "Sports",
   "Gaming",
   "Art",
